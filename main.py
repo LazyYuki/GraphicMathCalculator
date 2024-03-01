@@ -38,8 +38,8 @@ while True:
     dt = clock.tick(fps)
 
     # show fps
-    currentFps = clock.get_fps(fps)
-    pygame.display.set_caption(f"FPS:")
+    currentFps = clock.get_fps()
+    pygame.display.set_caption(f"FPS: {currentFps:.0f}")
 
     # update display
     pygame.display.flip()
