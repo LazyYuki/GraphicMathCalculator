@@ -1,7 +1,7 @@
 import pygame
 from WindowOverlayHelper.Window import Window
 from WindowOverlayHelper.WindowObject import WindowObject
-from WindowOverlayHelper.Input import Input
+from EventManager.Input import Input
 
 # === variables === 
 screenWidth = 800
@@ -28,7 +28,7 @@ while True:
     for event in events:
         if event.type == pygame.QUIT:
             pygame.quit()
-            exit(1)
+            exit(0)
 
 
     # reset screen

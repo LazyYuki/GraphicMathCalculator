@@ -1,4 +1,4 @@
-from WindowOverlayHelper.Input import Input
+from EventManager.Input import Input
 from WindowOverlayHelper.WindowObject import WindowObject
 
 class Window(WindowObject):

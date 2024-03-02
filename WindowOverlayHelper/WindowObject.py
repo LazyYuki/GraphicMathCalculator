@@ -1,4 +1,4 @@
-from WindowOverlayHelper.Input import Input
+from EventManager.Input import Input
 
 class WindowObject():
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
@@ -17,6 +17,7 @@ class WindowObject():
         return: None
         """
 
+        # === properties ===
         self.screen = screen
         self.x = x
         self.y = y
@@ -24,17 +25,23 @@ class WindowObject():
         self.width = width
         self.height = height
 
-    def update(self, inp: Input):
-        """
-        WindowObject.update:
-        - Updates every frame and calculates new positions and other stuff
+        # === event ====
+        self.show = True                # if it should be drawn
+        self.events = True              # if it should run events
+        self.foregroundCare = True      # if events should care about z value
 
-        Input inp: input from pygame
 
-        return None
-        """
+    # def update(self, inp: Input):
+    #     """
+    #     WindowObject.update:
+    #     - Updates every frame and calculates new positions and other stuff
 
-        pass
+    #     Input inp: input from pygame
+
+    #     return None
+    #     """
+
+    #     pass
 
     def render(self):
         """
