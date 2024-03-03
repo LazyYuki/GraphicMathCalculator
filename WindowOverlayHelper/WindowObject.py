@@ -25,11 +25,19 @@ class WindowObject():
         self.width = width
         self.height = height
 
+        self.parent = None
+        self.realX = x
+        self.realY = y
+
         # === event ====
         self.show = True                # if it should be drawn
         self.events = True              # if it should run events
         self.foregroundCare = True      # if events should care about z value
 
+    def calcRealPosition(self):
+        if self.parent != None:
+            self.realX = self.parent.x + self.x
+            self.realY = self.parent.y + self.y
 
     # def update(self, inp: Input):
     #     """

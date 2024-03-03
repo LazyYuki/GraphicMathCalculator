@@ -1,3 +1,6 @@
+import warnings
+
+from EventManager.EventManager import EventManager
 from EventManager.Input import Input
 from WindowOverlayHelper.WindowObject import WindowObject
 
@@ -20,7 +23,11 @@ class Window(WindowObject):
 
         super().__init__(screen, x, y, z, width, height)
         
-        self.__objects = [] # contains all objects from WindowObject
+         # contains all objects from WindowObject
+        self.__objects = []
+
+        # set event manager
+        self.eventManager = EventManager(self)
 
     def addObject(self, obj: WindowObject) -> bool:
         """
@@ -34,12 +41,32 @@ class Window(WindowObject):
         - if adding the object succeded or not
         """
 
+        # check if obj is WindowObject or child of it
         if obj.__class__.__bases__.count(WindowObject) + (obj.__class__ == WindowObject) == 0 or obj == self:
+            warnings.warn("Object is not WindowObject or child of it.")
             return False
 
+        # check if it has parent already
+        if obj.parent != None:
+            warnings.warn("Object already has a parent.")
+            return False
+
+        # set parent
+        obj.parent = self
+
+        # append to objects that are managed
         self.__objects.append(obj)
 
+        # register in event Manager
+        self.eventManager.registerEvent(obj)
+
         return True
+    
+    def calcRealPosition(self):
+        super().calcRealPosition()
+
+        for obj in self.__objects:
+            obj.calcRealPosition()
 
     def update(self, inp: Input):
         """
