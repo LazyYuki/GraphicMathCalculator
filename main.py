@@ -7,16 +7,32 @@ from EventManager.Input import Input
 
 from UIElements.test import Test
 
-window1 = Window(0, 0, 0, 0, 0, 0)
-window2 = Window(0, 0, 0, 0, 0, 0)
-window3 = Window(0, 0, 0, 0, 0, 0)
+window1 = Window(None, 0, 0, 0, 10, 10)
+window2 = Window(None, 5, 5, 0, 5, 5)
+window3 = Window(None, 0, 3, 0, 10, 3)
+obj1 = WindowObject(None, 0, 1, 0, 3, 9)
 
 window2.addObject(window3)
 window1.addObject(window2)
+#window1.addObject(obj1)
 
-window1.eventManager.mouseEventArgs.clicked = True
+window1.eventManager.calcObjectPixelMap()
 
-print(window3.eventManager.allEvents)
+name1 = str(window1.eventManager.objectPixelMapForeground[0][0])
+name2 = str(window1.eventManager.objectPixelMapForeground[5][5])
+name3 = str(window1.eventManager.objectPixelMapForeground[5][8])
+name4 = str(window1.eventManager.objectPixelMapForeground[0][1])
+
+print(name1, name2, name3, name4)
+
+for i in range(len(window1.eventManager.objectPixelMapForeground)):
+    s = ""
+
+    for j in range(10):
+        s += str(window1.eventManager.objectPixelMapForeground[j][i]).replace(name1, "w1").replace(name2, "w2").replace(name3, "w3").replace(name4, "obj4") + " | "
+
+    print(s)
+
 
 exit(0)
 
