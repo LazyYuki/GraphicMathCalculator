@@ -1,29 +1,6 @@
 import pygame
-from EventManager.Input import Input
 from WindowOverlayHelper.WindowObject import WindowObject
 from EventManager.EventArgs import KeyboardEventArgs, MouseEventArgs
-
-"""
-class Event():
-    mouseEventArgs = 0
-    keyboardEventArgs = 1
-
-    events = [
-        # === mouse ===
-        "mouseOnClick",              # only first mouse click until its reset
-        "mouseOnClickLeft",          # only first left mouse click until its reset
-        "mouseOnClickRight",         # only first right mouse click until its reset
-        "mouseOnClickMiddle",        # only first middle mouse click until its reset
-        "mouseHover",                # on every hover
-        "mouseEnter",                # only on first hover 
-        "mouseLeave",                # only on first leave
-
-        # === keyboard ===
-        "keyDown",                  # on every key down
-        "keyPress",                 # only first key down until its reset
-        "keyUP",                    # only on first key up
-    ]
-"""
 
 class EventManager:
     def __init__(self, parent: WindowObject) -> None:
@@ -74,7 +51,8 @@ class EventManager:
 
         # object pixel map (every pixel gets assigned its corresponding object or multiple objects) - can be pointer from parent manager
         self.objectPixelMap = [[[] for x in range(self.windowParent.width)] for y in range(self.windowParent.height)]               # all objects in that position
-        self.objectPixelMapForeground = [[None for x in range(self.windowParent.width)] for y in range(self.windowParent.height)]   # cares about the foreground of object
+
+# register event and helper ================================================================================================================================================
 
     def registerEvent(self, obj: WindowObject):
         """
@@ -103,7 +81,7 @@ class EventManager:
                 obj.eventManager.setKeyboardEventArgs(self.keyboardEventArgs)
 
                 # pass on objectPixelMap
-                obj.eventManager.setObjectPixelMap(self.objectPixelMap, self.objectPixelMapForeground)
+                obj.eventManager.setObjectPixelMap(self.objectPixelMap)
 
             # if methode and in known events
             if callable(getattr(obj, method)) and method in self.allEvents:
@@ -142,7 +120,7 @@ class EventManager:
         for sub in self.subManagerObjects:
             sub.eventManager.setKeyboardEventArgs(kEvent)
 
-    def setObjectPixelMap(self, objectPixelMap: list, objectPixelMapForeground: list):
+    def setObjectPixelMap(self, objectPixelMap: list):
         """
         EventManager.setObjectPixelMap:
         - updates pixel map for every sub event Manager
@@ -155,11 +133,10 @@ class EventManager:
 
         # set
         self.objectPixelMap = objectPixelMap
-        self.objectPixelMapForeground = objectPixelMapForeground
 
         # set for every sub manager
         for sub in self.subManagerObjects:
-            sub.eventManager.setObjectPixelMap(objectPixelMap, objectPixelMapForeground)
+            sub.eventManager.setObjectPixelMap(objectPixelMap)
 
     def calcObjectPixelMap(self):
         """
@@ -184,32 +161,71 @@ class EventManager:
         for y in range(rY, rT):
             for x in range(rX, rS):
                 # set window parent to current foreground
-                self.objectPixelMap[y][x].append(self.windowParent)
-                self.objectPixelMapForeground[y][x] = self.windowParent
+                if self.windowParent not in self.objectPixelMap[y][x]:
+                    self.objectPixelMap[y][x].insert(0, self.windowParent)
 
                 # check if objects are also in this area
                 obj: WindowObject
                 for obj in objects:
-                    if obj.getSpecialAreaLimit(x, y):
-                        self.objectPixelMap[y][x].append(obj)
-                        self.objectPixelMapForeground[y][x] = obj
+                    if obj.getSpecialAreaLimit(x, y) and obj not in self.objectPixelMap[y][x]:
+                        self.objectPixelMap[y][x].insert(0, obj)
 
         # calcl for rest
         for sub in self.subManagerObjects:
             sub.eventManager.calcObjectPixelMap()
 
-    def updateEventArgs(self, pygameEvents: list):
+# update event args ===========================================================================================================================================
+    def updateEventArgs(self, dt: float, pygameEvents: list, mouse: pygame.mouse):
         """
         EventManager.updateEventArgs:
         - updates event args based on pygame Events
 
+        float dt: delta time
         list pygameEvents: all pygameEvents
-
+        pygame.mouse mouse: mouse with events
+        
         return None
         """
 
-        pass
+        # === mouse ===
+        buttons = mouse.get_pressed(num_buttons=3)
 
+        # loop through buttons
+        for i in range(3):
+
+            if buttons[i]:
+                self.mouseEventArgs.sinceLastClick[i] = 0
+
+                # mouse down and click
+                if self.mouseEventArgs.mouseHolding[i] >= 0:
+                    self.mouseEventArgs.mouseHolding[i] += dt
+                    self.mouseEventArgs.buttonClicked[i] = False
+
+                else:
+                    self.mouseEventArgs.mouseHolding[i] = 0
+                    self.mouseEventArgs.buttonClicked[i] = True
+            else:
+                # up
+                if self.mouseEventArgs.mouseHolding[i] >= 0:
+                    self.mouseEventArgs.buttonUp[i] = True
+                    self.mouseEventArgs.mouseHolding[i] = -1 # reset
+                else:
+                    self.mouseEventArgs.buttonUp[i] = True
+
+                self.mouseEventArgs.sinceLastClick[i] += dt
+
+        # calc if clicked
+        self.mouseEventArgs.clicked = sum(self.mouseEventArgs.buttonClicked) > 0
+
+        # mouse pos
+        self.mouseEventArgs.lastX = self.mouseEventArgs.x
+        self.mouseEventArgs.lastY = self.mouseEventArgs.y
+
+        self.mouseEventArgs.x, self.mouseEventArgs.y = mouse.get_pos()
+
+        # === keyboard === TODO
+
+# check for trigger Events ===========================================================================================================================================
     def triggerRegisterdEvents(self):
         """
         EventManager.triggerRegisterdEvents:
@@ -219,6 +235,23 @@ class EventManager:
         return None
         """
 
+        # TODO: alle funktionen in self.triggerEvents ausführen und dabei auf foreground und so achten
 
+        pass
 
+    def getCurrentTriggerEvents(self):
+        """
+        EventManager.getCurrentTriggerEvents:
+        - checks which events have to be triggerd
+
+        return None
+        """
+
+        # TODO: für jedes event in self.allEvents die funktion in self ausführen und self.triggerEvents hinzufügen 
+
+        pass
+
+# === all events === TODO: für jedes event in self.allEvents den shit schreiben
+    
+    def mouseOnClick(self):
         pass

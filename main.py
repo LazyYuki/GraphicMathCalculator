@@ -1,9 +1,9 @@
 # TODO: better import name structure... WTF is application.application??
-from application.application import Application, ApplicationSettings
+
+# from application.application import Application, ApplicationSettings
 
 from WindowOverlayHelper.Window import Window
 from WindowOverlayHelper.WindowObject import WindowObject
-from EventManager.Input import Input
 from UIElements.test import Test
 
 window1 = Window(None, 0, 0, 0, 10, 10)
@@ -13,7 +13,15 @@ obj1 = WindowObject(None, 0, 1, 0, 3, 9)
 
 window2.addObject(window3)
 window1.addObject(window2)
-#window1.addObject(obj1)
+window1.addObject(obj1)
+
+window1.eventManager.calcObjectPixelMap()
+
+for line in window1.eventManager.objectPixelMap:
+    print(" | ".join(map(str, line))
+          .replace(str(window1), "w1").replace(str(window2), "w2").replace(str(window3), "w3").replace(str(obj1), "o1"))
+
+exit(0)
 
 window1.eventManager.mouseEventArgs.clicked = True
 

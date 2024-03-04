@@ -1,13 +1,29 @@
 class MouseEventArgs:
     def __init__(self) -> None:
+        """
+        MouseEventArgs:
+
+        bool clicked: if mouse got clicked (button doesnt matter)
+
+        list sinceLastClick: list of "left, middle, right" mb -> time since last click (0 = clicked)
+        list mouseHolding: list of "left, middle, right" mb -> time of continues holding (-1 not hold)
+        list buttonClicked: list of "left, middle, right" mb -> which one got clicked (click = mouse only on first down)
+        list buttonUp: list of "left, middle, right" mb -> which one got up
+
+        float x: pos of mouse
+        float y: pos of mouse
+        float lastX: pos of mouse in last cycle
+        float lastY: pos of mouse in last cycle
+
+        list hovered: list of all currently hoverd objects
+        """
+
         self.clicked = False
 
-        self.sinceLastClick = [0, 0, 0]     #left, middle, right
-        self.sinceMouseDown = [-1, -1, -1]  #left, middle, right
-
-        self.leftButton = False
-        self.rightButton = False
-        self.middleButton = False
+        self.sinceLastClick = [1, 1, 1]                     #left, middle, right    # 0 = down
+        self.mouseHolding = [-1, -1, -1]                    #left, middle, right    # time of continiues holding
+        self.buttonClicked = [False, False, False]          #left, middle, right
+        self.buttonUp = [False, False, False]               #left, middle, right#left, middle, right
 
         self.x = 0
         self.y = 0

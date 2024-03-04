@@ -1,7 +1,6 @@
 import warnings
 
 from EventManager.EventManager import EventManager
-from EventManager.Input import Input
 from WindowOverlayHelper.WindowObject import WindowObject
 
 class Window(WindowObject):
@@ -80,17 +79,57 @@ class Window(WindowObject):
         for obj in self.objects:
             obj.calcRealPosition()
 
-    def update(self, inp: Input):
+    def hide(self, lockDraw = False, lockEvents = False):
         """
-        WindowObject.update:
-        - Updates every frame and calculates new positions and other stuff
+        Window.hide:
+        - hide object from draw and all interaction if not locked
+        - pass to children
 
-        Input inp: input from pygame
+        bool lockDraw: locks draw from changing
+        bool lockEvents: locks events from changing
 
-        return None
+        return bool
         """
 
-        pass
+        if not (self.lockDraw and lockDraw): 
+            self.draw = False
+
+            obj: WindowObject
+            for obj in self.objects:
+                obj.hide(False, True)
+
+        if not ( self.lockEvents and lockEvents):
+            self.events = False
+
+            obj: WindowObject
+            for obj in self.objects:
+                obj.hide(True, False)
+
+    def show(self, lockDraw = False, lockEvents = False):
+        """
+        Window.show:
+        - show object from draw and all interaction if not locked
+        - pass to children
+
+        bool lockDraw: locks draw from changing
+        bool lockEvents: locks events from changing
+
+        return bool
+        """
+
+        if not (self.lockDraw and lockDraw): 
+            self.draw = True
+
+            obj: WindowObject
+            for obj in self.objects:
+                obj.show(False, True)
+
+        if not ( self.lockEvents and lockEvents):
+            self.events = True
+
+            obj: WindowObject
+            for obj in self.objects:
+                obj.show(True, False)
 
     def render(self):
         """

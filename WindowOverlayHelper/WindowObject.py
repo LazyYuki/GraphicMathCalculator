@@ -1,5 +1,3 @@
-from EventManager.Input import Input
-
 class WindowObject():
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
         """
@@ -32,8 +30,11 @@ class WindowObject():
         self.realT = y + height     # combination of y and height   | == end coord + 1
 
         # === event ====
-        self.show = True                # if it should be drawn
+        self.draw = True                # if it should be drawn
         self.events = True              # if it should run events
+
+        self.lockDraw = False            # show() / hide() wont change self.draw
+        self.lockEvents = False          # show() / hide() wont change self.events
 
     def calcRealPosition(self):
         """
@@ -65,17 +66,39 @@ class WindowObject():
 
         return (x >= self.realX and y >= self.realY and x < self.realS and y < self.realT)
 
-    # def update(self, inp: Input):
-    #     """
-    #     WindowObject.update:
-    #     - Updates every frame and calculates new positions and other stuff
+    def hide(self, lockDraw = False, lockEvents = False):
+        """
+        WindowObject.hide:
+        - hide object from draw and all interaction if not locked
 
-    #     Input inp: input from pygame
+        bool lockDraw: locks draw from changing
+        bool lockEvents: locks events from changing
 
-    #     return None
-    #     """
+        return bool
+        """
 
-    #     pass
+        if not (self.lockDraw and lockDraw): 
+            self.draw = False
+
+        if not ( self.lockEvents and lockEvents):
+            self.events = False
+
+    def show(self, lockDraw = False, lockEvents = False):
+        """
+        WindowObject.show:
+        - show object from draw and all interaction if not locked
+
+        bool lockDraw: locks draw from changing
+        bool lockEvents: locks events from changing
+
+        return bool
+        """
+
+        if not (self.lockDraw and lockDraw): 
+            self.draw = True
+
+        if not ( self.lockEvents and lockEvents): 
+            self.events = True
 
     def render(self):
         """
