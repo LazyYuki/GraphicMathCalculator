@@ -24,7 +24,7 @@ class Window(WindowObject):
         super().__init__(screen, x, y, z, width, height)
         
          # contains all objects from WindowObject
-        self.__objects = []
+        self.objects = []
 
         # set event manager
         self.eventManager = EventManager(self)
@@ -55,7 +55,10 @@ class Window(WindowObject):
         obj.parent = self
 
         # append to objects that are managed
-        self.__objects.append(obj)
+        self.objects.append(obj)
+
+        # calculate real Position
+        obj.calcRealPosition()
 
         # register in event Manager
         self.eventManager.registerEvent(obj)
@@ -63,9 +66,18 @@ class Window(WindowObject):
         return True
     
     def calcRealPosition(self):
+        """
+        WindowObject.calcRealPosition:
+        - Calculates real position in reference to parent 
+        - recalculates position of children too
+
+        return None
+        """
+
         super().calcRealPosition()
 
-        for obj in self.__objects:
+        # calc for every sub object too
+        for obj in self.objects:
             obj.calcRealPosition()
 
     def update(self, inp: Input):
@@ -89,10 +101,10 @@ class Window(WindowObject):
         """
 
         # sort for z value (foreground / background draw) -> z = 0, foreground
-        self.__objects.sort(key= lambda x: x.z, reverse=True)
+        self.objects.sort(key= lambda x: x.z, reverse=True)
 
         # loop through objects and render
         obj: WindowObject
-        for obj in self.__objects:
+        for obj in self.objects:
             obj.render()
 

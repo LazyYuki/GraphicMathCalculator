@@ -28,16 +28,42 @@ class WindowObject():
         self.parent = None
         self.realX = x
         self.realY = y
+        self.realS = x + width      # combination of x and width    | == end coord + 1
+        self.realT = y + height     # combination of y and height   | == end coord + 1
 
         # === event ====
         self.show = True                # if it should be drawn
         self.events = True              # if it should run events
-        self.foregroundCare = True      # if events should care about z value
 
     def calcRealPosition(self):
+        """
+        WindowObject.calcRealPosition:
+        - Calculates real position in reference to parent 
+
+        return None
+        """
+
         if self.parent != None:
-            self.realX = self.parent.x + self.x
-            self.realY = self.parent.y + self.y
+            self.realX = self.parent.realX + self.x
+            self.realY = self.parent.realY + self.y
+
+            self.realS = min(self.width + self.realX, self.parent.realS)
+            self.realT = min(self.height + self.realY, self.parent.realT)
+
+    def getSpecialAreaLimit(self, x: int, y: int) -> bool:
+        """
+        WindowObject.specialAreaLimit:
+        - tells if x and y are part of this object
+        - needed if object is not a rect
+
+        int x : real x position (like self.realX)
+        int y : real y position (like self.realY)
+
+        return bool
+        - True if x and y are part of object
+        """
+
+        return (x >= self.realX and y >= self.realY and x < self.realS and y < self.realT)
 
     # def update(self, inp: Input):
     #     """

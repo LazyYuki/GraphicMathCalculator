@@ -3,6 +3,7 @@ from EventManager.Input import Input
 from WindowOverlayHelper.WindowObject import WindowObject
 from EventManager.EventArgs import KeyboardEventArgs, MouseEventArgs
 
+"""
 class Event():
     mouseEventArgs = 0
     keyboardEventArgs = 1
@@ -22,6 +23,7 @@ class Event():
         "keyPress",                 # only first key down until its reset
         "keyUP",                    # only on first key up
     ]
+"""
 
 class EventManager:
     def __init__(self, parent: WindowObject) -> None:
@@ -71,9 +73,8 @@ class EventManager:
         self.keyboardEventArgs = KeyboardEventArgs()      # args || or Pointer to current Keyboard Event Args     (if child event manager)
 
         # object pixel map (every pixel gets assigned its corresponding object or multiple objects) - can be pointer from parent manager
-        self.objectPixelMap = [[None for x in range(self.windowParent.width)] for y in range(self.windowParent.height)]
-        self.objectPixelOffsetX = 0
-        self.objectPixelOffsetY = 0
+        self.objectPixelMap = [[[] for x in range(self.windowParent.width)] for y in range(self.windowParent.height)]               # all objects in that position
+        self.objectPixelMapForeground = [[None for x in range(self.windowParent.width)] for y in range(self.windowParent.height)]   # cares about the foreground of object
 
     def registerEvent(self, obj: WindowObject):
         """
@@ -102,8 +103,7 @@ class EventManager:
                 obj.eventManager.setKeyboardEventArgs(self.keyboardEventArgs)
 
                 # pass on objectPixelMap
-
-                # TODO
+                obj.eventManager.setObjectPixelMap(self.objectPixelMap, self.objectPixelMapForeground)
 
             # if methode and in known events
             if callable(getattr(obj, method)) and method in self.allEvents:
@@ -115,7 +115,7 @@ class EventManager:
         - set mouse Event Args
         - set mouse Event Args for all sub Managers
 
-        list pygameEvents: all pygameEvents
+        MouseEventArgs mEvent: mouse event args
 
         return None
         """
@@ -127,11 +127,11 @@ class EventManager:
 
     def setKeyboardEventArgs(self, kEvent: KeyboardEventArgs):
         """
-        EventManager.setMouseEventArgs:
-        - set mouse Event Args
-        - set mouse Event Args for all sub Managers
+        EventManager.setKeyboardEventArgs:
+        - set keyboard Event Args
+        - set keyboard Event Args for all sub Managers
 
-        list pygameEvents: all pygameEvents
+        KeyboardEventArgs kEvent: keyboard event args
 
         return None
         """
@@ -142,8 +142,61 @@ class EventManager:
         for sub in self.subManagerObjects:
             sub.eventManager.setKeyboardEventArgs(kEvent)
 
-    def setObjectPixelMap(self):
-        pass
+    def setObjectPixelMap(self, objectPixelMap: list, objectPixelMapForeground: list):
+        """
+        EventManager.setObjectPixelMap:
+        - updates pixel map for every sub event Manager
+
+        list objectPixelMap: the normal object pixel map
+        list objectPixelMapForeground: where only the foreground objects count
+
+        return None
+        """
+
+        # set
+        self.objectPixelMap = objectPixelMap
+        self.objectPixelMapForeground = objectPixelMapForeground
+
+        # set for every sub manager
+        for sub in self.subManagerObjects:
+            sub.eventManager.setObjectPixelMap(objectPixelMap, objectPixelMapForeground)
+
+    def calcObjectPixelMap(self):
+        """
+        EventManager.calcObjectPixelMap:
+        - calculates the actual objects per pixel
+
+        list objectPixelMap: the normal object pixel map
+        list objectPixelMapForeground: where only the foreground objects count
+
+        return None
+        """
+        
+        # calc
+        self.windowParent.calcRealPosition()
+
+        # calculate object pixel
+        rX, rY, rS, rT = self.windowParent.realX, self.windowParent.realY, self.windowParent.realS, self.windowParent.realT
+        objects = self.windowParent.objects
+
+        print(rX, rY, rS, rT)
+
+        for y in range(rY, rT):
+            for x in range(rX, rS):
+                # set window parent to current foreground
+                self.objectPixelMap[y][x].append(self.windowParent)
+                self.objectPixelMapForeground[y][x] = self.windowParent
+
+                # check if objects are also in this area
+                obj: WindowObject
+                for obj in objects:
+                    if obj.getSpecialAreaLimit(x, y):
+                        self.objectPixelMap[y][x].append(obj)
+                        self.objectPixelMapForeground[y][x] = obj
+
+        # calcl for rest
+        for sub in self.subManagerObjects:
+            sub.eventManager.calcObjectPixelMap()
 
     def updateEventArgs(self, pygameEvents: list):
         """
