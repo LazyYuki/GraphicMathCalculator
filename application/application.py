@@ -1,6 +1,11 @@
 import pygame
 from typing import Self
 
+# shit imports :skull:
+from WindowOverlayHelper.Window import Window
+from UIElements.test import Test
+
+
 class ApplicationSettings:
 
     title: str
@@ -20,6 +25,8 @@ class Application:
     _clock: pygame.time.Clock
     _screen: pygame.Surface
 
+    _mainWindow: Window
+
     def __init__(self: Self, settings: ApplicationSettings) -> None:
         self.settings = settings
 
@@ -31,6 +38,12 @@ class Application:
 
         self._clock = pygame.time.Clock()
 
+        # == debug shit von arwed ==
+        self._mainWindow = Window(self._screen, 0, 0, 0, self.settings.width, self.settings.height)
+        self.test = Test(self._screen, 100, 100, 0, 100, 100)
+
+        self._mainWindow.addObject(self.test)
+
         return True
 
     def _executionLoop(self: Self) -> bool:
@@ -39,15 +52,24 @@ class Application:
 
             # TODO: more differentation between each component: InputComponent, UpdateComponent, RenderComponent, etc.
             # -- Input Component --
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 match event.type:
                     case pygame.QUIT:
                         return True
 
+            # TODO == debug code von arwed (shit) ==
+            self._mainWindow.eventManager.updateEventArgs(deltaTime, events, pygame.mouse)
+            self._mainWindow.eventManager.updateCurrentTriggerEvents()
+
+            # print(self._mainWindow.eventManager.triggerEvents)
+
             # -- Update Component --
-            ...
+            self._mainWindow.eventManager.triggerRegisterdEvents()
 
             # -- Render Component --
+            self.test.render()
+
             pygame.display.flip()
 
         return True

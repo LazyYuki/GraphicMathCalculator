@@ -1,6 +1,7 @@
 import pygame
 from WindowOverlayHelper.WindowObject import WindowObject
 from EventManager.EventArgs import KeyboardEventArgs, MouseEventArgs
+from copy import deepcopy
 
 class EventManager:
     def __init__(self, parent: WindowObject) -> None:
@@ -22,7 +23,7 @@ class EventManager:
             # === mouse ===
             "mouseOnClick" : list(),              # only first mouse click until its reset
             "mouseOnUp" : list(),                 # only first mouse click until its reset
-            "mouseOnDown" : list(),                 # only first mouse click until its reset
+            "mouseDown" : list(),                 # always when mouse hold
             "mouseHover" : list(),                # on every hover
             "mouseEnter" : list(),                # only on first hover 
             "mouseLeave" : list(),                # only on first leave
@@ -37,7 +38,7 @@ class EventManager:
         for side in ["Left", "Middle", "Right"]:
             self.allEvents["mouseOnClick" + side] = list()
             self.allEvents["mouseOnUp" + side] = list()
-            self.allEvents["mouseOnDown" + side] = list()
+            self.allEvents["mouseDown" + side] = list()
 
         # events that will be triggerd in the current cycle
         self.triggerEvents = []
@@ -48,6 +49,27 @@ class EventManager:
         # event Args - can be pointer from parent manager
         self.mouseEventArgs = MouseEventArgs()          # args || or Pointer to current Mouse Event Args        (if child event manager)
         self.keyboardEventArgs = KeyboardEventArgs()      # args || or Pointer to current Keyboard Event Args     (if child event manager)
+
+        self.argsList = [self.mouseEventArgs, self.keyboardEventArgs]
+
+        # number corresponds to index in list
+        self.argsCorrespondingToFunctions = {
+            "mouseOnClick" : 0,              
+            "mouseOnUp" : 0,               
+            "mouseDown" : 0,            
+            "mouseHover" : 0,        
+            "mouseEnter" : 0,         
+            "mouseLeave" : 0,         
+            "keyDown": 1,             
+            "keyPress": 1,           
+            "keyUP" : 1,                
+        }
+
+        # add for mouse left, middle and right
+        for side in ["Left", "Middle", "Right"]:
+            self.argsCorrespondingToFunctions["mouseOnClick" + side] = 0
+            self.argsCorrespondingToFunctions["mouseOnUp" + side] = 0
+            self.argsCorrespondingToFunctions["mouseDown" + side] = 0
 
         # object pixel map (every pixel gets assigned its corresponding object or multiple objects) - can be pointer from parent manager
         self.objectPixelMap = [[[] for x in range(self.windowParent.width)] for y in range(self.windowParent.height)]               # all objects in that position
@@ -99,6 +121,7 @@ class EventManager:
         """
 
         self.mouseEventArgs = mEvent
+        self.argsList[0] = mEvent
 
         for sub in self.subManagerObjects:
             sub.eventManager.setMouseEventArgs(mEvent)
@@ -115,6 +138,7 @@ class EventManager:
         """
 
         self.keyboardEventArgs = kEvent
+        self.argsList[1] = kEvent
 
         sub: EventManager
         for sub in self.subManagerObjects:
@@ -199,23 +223,24 @@ class EventManager:
                 # mouse down and click
                 if self.mouseEventArgs.mouseHolding[i] >= 0:
                     self.mouseEventArgs.mouseHolding[i] += dt
-                    self.mouseEventArgs.buttonClicked[i] = False
+                    self.mouseEventArgs.mouseClicked[i] = False
 
                 else:
                     self.mouseEventArgs.mouseHolding[i] = 0
-                    self.mouseEventArgs.buttonClicked[i] = True
+                    self.mouseEventArgs.mouseClicked[i] = True
             else:
                 # up
                 if self.mouseEventArgs.mouseHolding[i] >= 0:
-                    self.mouseEventArgs.buttonUp[i] = True
+                    self.mouseEventArgs.mouseUp[i] = True
                     self.mouseEventArgs.mouseHolding[i] = -1 # reset
                 else:
-                    self.mouseEventArgs.buttonUp[i] = True
+                    self.mouseEventArgs.mouseUp[i] = False
 
                 self.mouseEventArgs.sinceLastClick[i] += dt
 
         # calc if clicked
-        self.mouseEventArgs.clicked = sum(self.mouseEventArgs.buttonClicked) > 0
+        self.mouseEventArgs.clicked = sum(self.mouseEventArgs.mouseClicked) > 0
+        self.mouseEventArgs.up = sum(self.mouseEventArgs.mouseUp) > 0
 
         # mouse pos
         self.mouseEventArgs.lastX = self.mouseEventArgs.x
@@ -235,23 +260,76 @@ class EventManager:
         return None
         """
 
-        # TODO: alle funktionen in self.triggerEvents ausführen und dabei auf foreground und so achten
+        # TODO auf foreground und so shit achten
+        # TODO auf bounderies achten und so
 
-        pass
+        for event in self.triggerEvents:
+            correspondingArgs = self.argsList[self.argsCorrespondingToFunctions[event]]
 
-    def getCurrentTriggerEvents(self):
+            for obj in self.allEvents[event]:
+                # getattr(obj, event)(correspondingArgs)
+                getattr(obj, event)(deepcopy(correspondingArgs)) # slower but for safety
+
+        # TODO: run on all sub event managers, but firstly connect bn
+
+
+    def updateCurrentTriggerEvents(self):
         """
-        EventManager.getCurrentTriggerEvents:
+        EventManager.updateCurrentTriggerEvents:
         - checks which events have to be triggerd
 
         return None
         """
 
-        # TODO: für jedes event in self.allEvents die funktion in self ausführen und self.triggerEvents hinzufügen 
+        self.triggerEvents = []
 
-        pass
+        for key in self.allEvents.keys():
+            funcName = "_" + key
+            if hasattr(self, funcName) and getattr(self, funcName)():
+                self.triggerEvents.append(key)
 
 # === all events === TODO: für jedes event in self.allEvents den shit schreiben
     
-    def mouseOnClick(self):
-        pass
+    # == mouse clicked ==
+
+    def _mouseOnClick(self) -> bool:
+        return self.mouseEventArgs.clicked
+    
+    def _mouseOnClickLeft(self) -> bool:
+        return self.mouseEventArgs.mouseClicked[0]
+    
+    def _mouseOnClickMiddle(self) -> bool:
+        return self.mouseEventArgs.mouseClicked[1]
+    
+    def _mouseOnClickRight(self) -> bool:
+        return self.mouseEventArgs.mouseClicked[2]
+    
+    # == mouse up ==
+
+    def _mouseOnUp(self) -> bool:
+        return self.mouseEventArgs.up
+    
+    def _mouseOnUpLeft(self) -> bool:
+        return self.mouseEventArgs.mouseUp[0]
+    
+    def _mouseOnUpMiddle(self) -> bool:
+        return self.mouseEventArgs.mouseUp[1]
+    
+    def _mouseOnUpRight(self) -> bool:
+        return self.mouseEventArgs.mouseUp[2]
+    
+    # == mouse down ==
+
+    def _mouseDown(self) -> bool:
+        return self._mouseDownLeft() or self._mouseDownMiddle() or self._mouseDownRight()
+
+    def _mouseDownLeft(self) -> bool:
+        return self.mouseEventArgs.mouseHolding[0] >= 0
+    
+    def _mouseDownMiddle(self) -> bool:
+        return self.mouseEventArgs.mouseHolding[1] >= 0
+    
+    def _mouseDownRight(self) -> bool:
+        return self.mouseEventArgs.mouseHolding[2] >= 0
+    
+# TODO: implement hover somehow :shrug:
