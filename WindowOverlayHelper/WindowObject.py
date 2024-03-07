@@ -1,3 +1,5 @@
+import pygame
+
 class WindowObject():
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
         """
@@ -19,7 +21,7 @@ class WindowObject():
         self.screen = screen
         self.x = x
         self.y = y
-        self.z = z # z = 0 foreground
+        self.z = z # z = 0 background
         self.width = width
         self.height = height
 
@@ -28,10 +30,14 @@ class WindowObject():
         self.realY = y
         self.realS = x + width      # combination of x and width    | == end coord + 1
         self.realT = y + height     # combination of y and height   | == end coord + 1
+        self.realWidth = width
+        self.realHeight = height
 
         # === event ====
         self.draw = True                # if it should be drawn
         self.events = True              # if it should run events
+
+        self.onlyEventItemInForeground = True   # all events in this area will only activate for this obj (if its on top of clicked)
 
         self.lockDraw = False            # show() / hide() wont change self.draw
         self.lockEvents = False          # show() / hide() wont change self.events
@@ -50,6 +56,9 @@ class WindowObject():
 
             self.realS = min(self.width + self.realX, self.parent.realS)
             self.realT = min(self.height + self.realY, self.parent.realT)
+
+            self.realWidth = self.realS - self.realX
+            self.realHeight = self.realT - self.realY
 
     def getSpecialAreaLimit(self, x: int, y: int) -> bool:
         """
@@ -99,6 +108,9 @@ class WindowObject():
 
         if not ( self.lockEvents and lockEvents): 
             self.events = True
+
+    def getRealRect(self) -> pygame.Rect:
+        return pygame.Rect(self.realX, self.realY, self.realWidth, self.realHeight)
 
     def render(self):
         """

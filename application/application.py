@@ -40,9 +40,16 @@ class Application:
 
         # == debug shit von arwed ==
         self._mainWindow = Window(self._screen, 0, 0, 0, self.settings.width, self.settings.height)
-        self.test = Test(self._screen, 100, 100, 0, 100, 100)
 
-        self._mainWindow.addObject(self.test)
+        self.subWindow = Window(self._screen, 100, 100, 0, 100, 100)
+
+        self.test = Test(self._screen, 50, 50, 0, 100, 100)
+
+        self.subWindow.addObject(self.test)
+        self._mainWindow.addObject(self.subWindow)
+
+        print(self._mainWindow.eventManager.allEvents)
+        print(self._mainWindow.eventManager.subManagerObjects)
 
         return True
 
@@ -62,7 +69,8 @@ class Application:
             self._mainWindow.eventManager.updateEventArgs(deltaTime, events, pygame.mouse)
             self._mainWindow.eventManager.updateCurrentTriggerEvents()
 
-            # print(self._mainWindow.eventManager.triggerEvents)
+            # if len(self._mainWindow.eventManager.triggerEvents):
+            #     print(self._mainWindow.eventManager.triggerEvents)
 
             # -- Update Component --
             self._mainWindow.eventManager.triggerRegisterdEvents()

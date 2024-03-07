@@ -10,10 +10,13 @@ class Test(WindowObject):
         self.color = (255, 255, 255)
 
     def render(self):
-        pygame.draw.rect(self.screen, self.color, pygame.Rect(self.realX, self.realY, self.width, self.height))
+        pygame.draw.rect(self.screen, self.color, self.getRealRect())
+
+    def mouseEnter(self, eventArgs: MouseEventArgs):
+        self.color = (0, 255, 0)
 
     def mouseOnClick(self, eventArgs: MouseEventArgs):
         self.color = (255, 0, 0)
 
-    def mouseOnUp(self, eventArgs: MouseEventArgs):
+    def mouseLeave(self, eventArgs: MouseEventArgs):
         self.color = (255, 255, 255)

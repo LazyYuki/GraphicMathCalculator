@@ -22,7 +22,7 @@ class Window(WindowObject):
 
         super().__init__(screen, x, y, z, width, height)
         
-         # contains all objects from WindowObject
+        # contains all objects from WindowObject
         self.objects = []
 
         # set event manager

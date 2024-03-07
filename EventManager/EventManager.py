@@ -74,6 +74,9 @@ class EventManager:
         # object pixel map (every pixel gets assigned its corresponding object or multiple objects) - can be pointer from parent manager
         self.objectPixelMap = [[[] for x in range(self.windowParent.width)] for y in range(self.windowParent.height)]               # all objects in that position
 
+        # register self
+        self.registerEvent(self.windowParent)
+
 # register event and helper ================================================================================================================================================
 
     def registerEvent(self, obj: WindowObject):
@@ -95,7 +98,7 @@ class EventManager:
                 continue
 
             # if object also includes a sub event Manager
-            if method == "eventManager":
+            if method == "eventManager" and obj != self.windowParent:
                 self.subManagerObjects.append(obj)
 
                 # pass event args on
@@ -108,6 +111,8 @@ class EventManager:
             # if methode and in known events
             if callable(getattr(obj, method)) and method in self.allEvents:
                 self.allEvents[method].append(obj) # obj passed as pointer so memory will be okay
+
+        # self.calcObjectPixelMap()
                 
     def setMouseEventArgs(self, mEvent: MouseEventArgs):
         """
@@ -178,7 +183,7 @@ class EventManager:
 
         # calculate object pixel
         rX, rY, rS, rT = self.windowParent.realX, self.windowParent.realY, self.windowParent.realS, self.windowParent.realT
-        objects = self.windowParent.objects
+        objects = sorted(self.windowParent.objects, key = lambda x : x.z)
 
         print(rX, rY, rS, rT)
 
@@ -248,6 +253,8 @@ class EventManager:
 
         self.mouseEventArgs.x, self.mouseEventArgs.y = mouse.get_pos()
 
+        self.mouseEventArgs.pos = (self.mouseEventArgs.x, self.mouseEventArgs.y)
+
         # === keyboard === TODO
 
 # check for trigger Events ===========================================================================================================================================
@@ -260,18 +267,104 @@ class EventManager:
         return None
         """
 
-        # TODO auf foreground und so shit achten
-        # TODO auf bounderies achten und so
+        
+        """
+        # Bei objectPixelMap -> aber ist vielleicht zu langsam
+        
+        # objects pixel map will always have a len of 1 or above
+        if self.mouseEventArgs.y >= len(self.objectPixelMap) or self.mouseEventArgs.x >= len(self.objectPixelMap[0]):
+            # TODO: probably include on leave for hover??!
+            return
 
         for event in self.triggerEvents:
             correspondingArgs = self.argsList[self.argsCorrespondingToFunctions[event]]
 
-            for obj in self.allEvents[event]:
-                # getattr(obj, event)(correspondingArgs)
-                getattr(obj, event)(deepcopy(correspondingArgs)) # slower but for safety
+            # standard events
+            obj: WindowObject
+            for obj in self.objectPixelMap[self.mouseEventArgs.y][self.mouseEventArgs.x]:
+                # checks íf object needs events and if the current event corresponds with the object
+                if obj.events and obj in self.allEvents[event]:
+                    getattr(obj, event)(deepcopy(correspondingArgs))
 
-        # TODO: run on all sub event managers, but firstly connect bn
+                    # so only objects till this one are called
+                    if obj.onlyEventItemInForeground:
+                        break
 
+        # TODO: HOVER MECHANIC"""
+
+        oldHover = self.mouseEventArgs.hovered.copy()
+        self.mouseEventArgs.hovered.clear()
+
+        for event in self.triggerEvents:
+            correspondingArgs = self.argsList[self.argsCorrespondingToFunctions[event]]
+
+            self.runEvent(event, correspondingArgs)
+
+
+        # == for hover mechanic ==
+        for hoveredObj in self.mouseEventArgs.hovered:
+            if hoveredObj not in oldHover:
+                if hasattr(hoveredObj, "mouseEnter"):
+                    getattr(hoveredObj, "mouseEnter")(self.mouseEventArgs)
+            else:
+                oldHover.remove(hoveredObj)
+
+        for notHoverdAnymore in oldHover:
+            if hasattr(notHoverdAnymore, "mouseLeave"):
+                    getattr(notHoverdAnymore, "mouseLeave")(self.mouseEventArgs)
+
+    def runEvent(self, event, correspondingArgs) -> bool:
+        """
+        EventManager.runEvent:
+        - run events for this obj and sub event managers
+
+        str event: name of event
+        args correspondingArgs: corresponding args
+
+        return bool
+        - if it should stop current cycle because of WindowObject.onlyEventItemInForeground
+        """
+
+        mouseEvent = type(correspondingArgs) == MouseEventArgs
+
+        if mouseEvent and not self.windowParent.getRealRect().collidepoint(self.mouseEventArgs.pos):
+            return False
+        
+        # run event for all sub objects
+        for obj in sorted(self.subManagerObjects, key = lambda x: x.z, reverse=True):
+            if obj.eventManager.runEvent(event, correspondingArgs):
+                    return True
+
+        # sort objects
+        objects = sorted(self.allEvents[event], key = lambda x: x.z, reverse=True)
+
+        # put self at back
+        if self.windowParent in objects:
+            objects.remove(self.windowParent)
+            objects.append(self.windowParent)
+
+        obj: WindowObject
+        for obj in objects:
+            # mouse is not on object
+            if mouseEvent and not obj.getRealRect().collidepoint(self.mouseEventArgs.pos):
+                continue
+
+            # for hover since its special
+            if event == "mouseEnter" or event == "mouseLeave" or event == "mouseHover":
+                if obj not in self.mouseEventArgs.hovered:
+                    self.mouseEventArgs.hovered.append(obj)
+
+                if not event == "mouseHover":
+                    continue
+
+            # execute function
+            getattr(obj, event)(deepcopy(correspondingArgs))
+
+            # if object is only obj to be called then break
+            if obj.onlyEventItemInForeground:
+                return True
+        
+        return False
 
     def updateCurrentTriggerEvents(self):
         """
@@ -331,5 +424,16 @@ class EventManager:
     
     def _mouseDownRight(self) -> bool:
         return self.mouseEventArgs.mouseHolding[2] >= 0
+    
+    # == hover == -> have to be checked every cycle sadly, since opjects can move around freely, so it isnt dependend on user input :(
+
+    def _mouseHover(self) -> bool:
+        return True
+
+    def _mouseEnter(self) -> bool:
+        return True
+
+    def _mouseLeave(self) -> bool:
+        return True
     
 # TODO: implement hover somehow :shrug:

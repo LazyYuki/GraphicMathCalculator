@@ -33,6 +33,8 @@ class MouseEventArgs:
         self.lastX = 0
         self.lastY = 0
 
+        self.pos = (0, 0)
+
         self.hovered = []
     
 class KeyboardEventArgs:
