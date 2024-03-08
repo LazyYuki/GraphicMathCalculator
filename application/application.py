@@ -48,8 +48,10 @@ class Application:
         self.subWindow.addObject(self.test)
         self._mainWindow.addObject(self.subWindow)
 
-        print(self._mainWindow.eventManager.allEvents)
-        print(self._mainWindow.eventManager.subManagerObjects)
+        #print(self._mainWindow.eventManager.allEvents)
+        #print(self._mainWindow.eventManager.subManagerObjects)
+
+        print(self.subWindow.eventManager.allEvents)
 
         return True
 
@@ -66,7 +68,7 @@ class Application:
                         return True
 
             # TODO == debug code von arwed (shit) ==
-            self._mainWindow.eventManager.updateEventArgs(deltaTime, events, pygame.mouse)
+            self._mainWindow.eventManager.updateEventArgs(deltaTime, events, pygame.mouse, pygame.key.get_pressed())
             self._mainWindow.eventManager.updateCurrentTriggerEvents()
 
             # if len(self._mainWindow.eventManager.triggerEvents):

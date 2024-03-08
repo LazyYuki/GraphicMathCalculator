@@ -1,7 +1,7 @@
 import pygame
 
 from WindowOverlayHelper.WindowObject import WindowObject
-from EventManager.EventArgs import MouseEventArgs
+from EventManager.EventArgs import *
 
 class Test(WindowObject):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
@@ -20,3 +20,15 @@ class Test(WindowObject):
 
     def mouseLeave(self, eventArgs: MouseEventArgs):
         self.color = (255, 255, 255)
+
+    def keyDown(self, eventArgs: KeyboardEventArgs):
+        for e in eventArgs.down:
+            key: KeyEventArgs
+            key = eventArgs.keys[e]
+
+            print(key.pressed, key.down)
+
+            break
+
+    def keyUp(self, eventArgs: KeyboardEventArgs):
+        print("keyUp")

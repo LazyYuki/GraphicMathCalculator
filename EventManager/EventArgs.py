@@ -36,11 +36,21 @@ class MouseEventArgs:
         self.pos = (0, 0)
 
         self.hovered = []
-    
+
+class KeyEventArgs:
+    def __init__(self) -> None:
+        self.pressed = False        # if pressed
+        self.up = False             # if up
+        self.down = False
+
+        self.sinceLastPress = 1     # 0 = down
+        self.holding = -1           # time of continiues holding
+
 class KeyboardEventArgs:
     def __init__(self) -> None:
-        self.keys = {}
+        # list of every key and its status (index = pygame.K_0 .K_1 ...)
+        self.keys =[KeyEventArgs() for _ in range(512)]  # 512 = len of pygame.key.getpressed()
 
-        self.keysDown = {}
-        self.keysPress = {}
-        self.keysUp = {}
+        self.pressed = set()   # dict with all currently pressed keys
+        self.down = set()   # dict with all currently held keys
+        self.up = set()        # dicht with all keys that went up
