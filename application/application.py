@@ -51,7 +51,8 @@ class Application:
         #print(self._mainWindow.eventManager.allEvents)
         #print(self._mainWindow.eventManager.subManagerObjects)
 
-        print(self.subWindow.eventManager.allEvents)
+        self.test.onlyEventItemInForeground = False
+        self.subWindow.onlyEventItemInForeground = False
 
         return True
 
@@ -78,7 +79,7 @@ class Application:
             self._mainWindow.eventManager.triggerRegisterdEvents()
 
             # -- Render Component --
-            self.test.render()
+            self._mainWindow.render()
 
             pygame.display.flip()
 

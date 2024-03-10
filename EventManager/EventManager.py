@@ -296,7 +296,7 @@ class EventManager:
             if hasattr(notHoverdAnymore, "mouseLeave"):
                     getattr(notHoverdAnymore, "mouseLeave")(self.mouseEventArgs)
 
-    def runEvent(self, event, correspondingArgs) -> bool:
+    def runEvent(self, event, correspondingArgs, runSelf = True) -> bool:
         """
         EventManager.runEvent:
         - run events for this obj and sub event managers
@@ -315,7 +315,7 @@ class EventManager:
         
         # run event for all sub objects
         for obj in sorted(self.subManagerObjects, key = lambda x: x.z, reverse=True):
-            if obj.eventManager.runEvent(event, correspondingArgs):
+            if obj.eventManager.runEvent(event, correspondingArgs, False):
                     return True
 
         # sort objects
@@ -324,7 +324,10 @@ class EventManager:
         # put self at back
         if self.windowParent in objects:
             objects.remove(self.windowParent)
-            objects.append(self.windowParent)
+
+            # important for sub manager, so that an object isnt run more then once
+            if runSelf:
+                objects.append(self.windowParent)
 
         obj: WindowObject
         for obj in objects:
