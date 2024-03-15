@@ -21,14 +21,8 @@ class Test(WindowObject):
     def mouseLeave(self, eventArgs: MouseEventArgs):
         self.color = (255, 255, 255)
 
-    def keyDown(self, eventArgs: KeyboardEventArgs):
-        for e in eventArgs.down:
-            key: KeyEventArgs
-            key = eventArgs.keys[e]
-
-            print(key.pressed, key.down)
-
-            break
+    def keyPress(self, eventArgs: KeyboardEventArgs):
+        self.x -= 50
 
     def keyUp(self, eventArgs: KeyboardEventArgs):
-        print("keyUp")
+        self.x += 50

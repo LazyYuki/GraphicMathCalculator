@@ -4,7 +4,7 @@ from typing import Self
 # shit imports :skull:
 from WindowOverlayHelper.Window import Window
 from UIElements.test import Test
-
+from UIElements.TextBox import TextBox
 
 class ApplicationSettings:
 
@@ -43,10 +43,13 @@ class Application:
 
         self.subWindow = Window(self._screen, 100, 100, 0, 100, 100)
 
-        self.test = Test(self._screen, 50, 50, 0, 100, 100)
+        self.test = Test(self._screen, 50, 50, 0, 50, 50)
+
+        self.textBox = TextBox(self._screen, 250, 50, 0, 200, 40)
 
         self.subWindow.addObject(self.test)
         self._mainWindow.addObject(self.subWindow)
+        self._mainWindow.addObject(self.textBox)
 
         #print(self._mainWindow.eventManager.allEvents)
         #print(self._mainWindow.eventManager.subManagerObjects)
@@ -69,6 +72,8 @@ class Application:
                         return True
 
             # TODO == debug code von arwed (shit) ==
+            self._screen.fill((0,0,0))
+
             self._mainWindow.eventManager.updateEventArgs(deltaTime, events, pygame.mouse, pygame.key.get_pressed())
             self._mainWindow.eventManager.updateCurrentTriggerEvents()
 
@@ -77,9 +82,12 @@ class Application:
 
             # -- Update Component --
             self._mainWindow.eventManager.triggerRegisterdEvents()
+            self._mainWindow.calcRealPosition()
 
             # -- Render Component --
             self._mainWindow.render()
+
+            print(self.textBox.cursor, self.textBox.text)
 
             pygame.display.flip()
 

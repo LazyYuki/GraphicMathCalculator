@@ -131,9 +131,6 @@ class Window(WindowObject):
             for obj in self.objects:
                 obj.show(True, False)
 
-    def mouseOnClick(self, m):
-        print(self.realX)
-
     def render(self):
         """
         WindowObject.render:
