@@ -5,6 +5,7 @@ from typing import Self
 from WindowOverlayHelper.Window import Window
 from UIElements.test import Test
 from UIElements.TextBox import TextBox
+from UIElements.Sidebar import Sidebar
 
 class ApplicationSettings:
 
@@ -41,20 +42,19 @@ class Application:
         # == debug shit von arwed ==
         self._mainWindow = Window(self._screen, 0, 0, 0, self.settings.width, self.settings.height)
 
-        self.subWindow = Window(self._screen, 100, 100, 0, 100, 100)
+        self.sidebar = Sidebar(self._screen, 10, 10, 0, 300, self.settings.height - 20)
 
-        self.test = Test(self._screen, 50, 50, 0, 50, 50)
+        self.subWindow = Window(self._screen, 100, 100, 1, 100, 100)
 
-        self.textBox = TextBox(self._screen, 250, 50, 0, 200, 40)
+        self.textBox = TextBox(self._screen, 250, 50, 1, 200, 40)
 
-        self.subWindow.addObject(self.test)
         self._mainWindow.addObject(self.subWindow)
         self._mainWindow.addObject(self.textBox)
+        self._mainWindow.addObject(self.sidebar)
 
         #print(self._mainWindow.eventManager.allEvents)
         #print(self._mainWindow.eventManager.subManagerObjects)
 
-        self.test.onlyEventItemInForeground = False
         self.subWindow.onlyEventItemInForeground = False
 
         return True
@@ -86,8 +86,6 @@ class Application:
 
             # -- Render Component --
             self._mainWindow.render()
-
-            print(self.textBox.cursor, self.textBox.text)
 
             pygame.display.flip()
 

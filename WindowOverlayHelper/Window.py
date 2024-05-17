@@ -28,6 +28,11 @@ class Window(WindowObject):
         # set event manager
         self.eventManager = EventManager(self)
 
+    def getAllBases(self, classes):
+        bases = classes.__bases__
+
+        return [self.getAllBases(c) for c in bases] + bases
+
     def addObject(self, obj: WindowObject) -> bool:
         """
         Window.addObject:
@@ -39,6 +44,8 @@ class Window(WindowObject):
         return bool
         - if adding the object succeded or not
         """
+
+        # TODO: getAllBases for finding WindowObject of Parent Parent... kms pls
 
         # check if obj is WindowObject or child of it
         if obj.__class__.__bases__.count(WindowObject) + (obj.__class__ == WindowObject) == 0 or obj == self:

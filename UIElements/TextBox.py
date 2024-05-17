@@ -38,8 +38,18 @@ class TextBox(WindowObject):
 
             return
         
+        upperCase = (pygame.K_LSHIFT in args.down) or (pygame.K_RSHIFT in args.down)
+
+        print(args.down, upperCase)
+
         # add keys to this
         for key in args.pressed:
+            c = chr(key)
+
+            if c.isalpha():
+                if upperCase:
+                    self.text += chr(key).upper()
+
             self.text += chr(key)
             self.cursor += 1
 
