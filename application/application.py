@@ -47,9 +47,11 @@ class Application:
         self.subWindow = Window(self._screen, 100, 100, 1, 100, 100)
 
         self.textBox = TextBox(self._screen, 250, 50, 1, 200, 40)
+        self.t = TextBox(self._screen, 250, 250, 1, 200, 40)
 
         self._mainWindow.addObject(self.subWindow)
         self._mainWindow.addObject(self.textBox)
+        self._mainWindow.addObject(self.t)
         self._mainWindow.addObject(self.sidebar)
 
         #print(self._mainWindow.eventManager.allEvents)
@@ -65,16 +67,28 @@ class Application:
 
             # TODO: more differentation between each component: InputComponent, UpdateComponent, RenderComponent, etc.
             # -- Input Component --
+
+            self._mainWindow.eventManager.clearKeyboardEventArgs()
             events = pygame.event.get()
             for event in events:
                 match event.type:
                     case pygame.QUIT:
                         return True
+                    
+                    case pygame.KEYDOWN:
+                        self._mainWindow.eventManager.updateKeyboardEventArgsDOWN(event)
+
+                    case pygame.KEYUP:
+                        self._mainWindow.eventManager.updateKeyboardEventArgsUP(event)
+
+            self._mainWindow.eventManager.updateKeyboardEventArgsDt(deltaTime)
+            self._mainWindow.eventManager.updateMouseEventArgs(deltaTime, pygame.mouse)
 
             # TODO == debug code von arwed (shit) ==
             self._screen.fill((0,0,0))
 
-            self._mainWindow.eventManager.updateEventArgs(deltaTime, events, pygame.mouse, pygame.key.get_pressed())
+            #self._mainWindow.eventManager.updateEventArgs(deltaTime, events, pygame.mouse, pygame.key.get_pressed())
+            
             self._mainWindow.eventManager.updateCurrentTriggerEvents()
 
             # if len(self._mainWindow.eventManager.triggerEvents):
@@ -83,6 +97,8 @@ class Application:
             # -- Update Component --
             self._mainWindow.eventManager.triggerRegisterdEvents()
             self._mainWindow.calcRealPosition()
+            self._mainWindow.update(deltaTime)
+            
 
             # -- Render Component --
             self._mainWindow.render()

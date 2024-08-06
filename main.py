@@ -1,5 +1,5 @@
 # TODO: better import name structure... WTF is appli
-from application.application import Application, ApplicationSettings
+from Application.Application import Application, ApplicationSettings
 
 # TODO: better integration between Application - WindowOverlayHelper components
 # ... maybe move everything to the application class

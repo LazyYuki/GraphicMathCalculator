@@ -43,14 +43,24 @@ class KeyEventArgs:
         self.up = False             # if up
         self.down = False
 
-        self.sinceLastPress = 1     # 0 = down
+        self.sinceLastPress = 0     # 0 = down
         self.holding = -1           # time of continiues holding
+
+        self.unicode = ""           # unicode of key
 
 class KeyboardEventArgs:
     def __init__(self) -> None:
-        # list of every key and its status (index = pygame.K_0 .K_1 ...)
-        self.keys =[KeyEventArgs() for _ in range(512)]  # 512 = len of pygame.key.getpressed()
+        self.keys = {} # dict with all keys and their status (key = pygame.K_0 .K_1 ... | value = KeyEventArgs)
 
         self.pressed = set()   # dict with all currently pressed keys
         self.down = set()   # dict with all currently held keys
         self.up = set()        # dicht with all keys that went up
+
+    def isPressed(self, key: int) -> bool:
+        return key in self.keys and self.keys[key] in self.pressed
+    
+    def isDown(self, key: int) -> bool:
+        return key in self.keys and self.keys[key] in self.down
+    
+    def isUp(self, key: int) -> bool:
+        return key in self.keys and self.keys[key] in self.up

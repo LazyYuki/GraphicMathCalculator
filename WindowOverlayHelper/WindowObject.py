@@ -112,6 +112,16 @@ class WindowObject():
     def getRealRect(self) -> pygame.Rect:
         return pygame.Rect(self.realX, self.realY, self.realWidth, self.realHeight)
 
+    def update(self, dt: float):
+        """
+        WindowObject.update:
+        - Updates every frame
+
+        return None
+        """
+
+        pass
+
     def render(self):
         """
         WindowObject.render:

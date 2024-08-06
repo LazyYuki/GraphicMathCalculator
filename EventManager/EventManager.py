@@ -144,28 +144,9 @@ class EventManager:
             sub.eventManager.setKeyboardEventArgs(kEvent)
 
 # update event args ===========================================================================================================================================
-    def updateEventArgs(self, dt: float, pygameEvents: list, mouse: pygame.mouse, keyboard: list):
+    def updateMouseEventArgs(self, dt: float, mouse: pygame.mouse):
         """
-        EventManager.updateEventArgs:
-        - updates event args based on pygame Events
-
-        float dt: delta time
-        list pygameEvents: all pygameEvents
-        pygame.mouse mouse: mouse with events
-        list keyboard: all keyboard events
-        
-        return None
-        """
-
-        # === mouse ===
-        self._updateMouseEventArgs(dt, mouse)
-
-        # === keyboard === TODO
-        self._updateKeyboardEventArgs(dt, keyboard)
-
-    def _updateMouseEventArgs(self, dt: float, mouse: pygame.mouse):
-        """
-        EventManager._updateMouseEventArgs:
+        EventManager.updateMouseEventArgs:
         - update mouse args
 
         float dt: delta time
@@ -213,58 +194,93 @@ class EventManager:
 
         self.mouseEventArgs.pos = (self.mouseEventArgs.x, self.mouseEventArgs.y)
 
-    def _updateKeyboardEventArgs(self, dt: float, keyboard: list):
-        """
-        EventManager._updateKeyboardEventArgs
-        - updates Keyboard Args
+    def clearKeyboardEventArgs(self):
+            """
+            EventManager.resetEventArgs:
+            - resets all keyboard event args
 
-        float dt: detla time
+            return None
+            """
+
+            self.keyboardEventArgs.pressed = set()
+            self.keyboardEventArgs.down = set()
+            self.keyboardEventArgs.up = set()
+
+            key: KeyEventArgs
+            for key in self.keyboardEventArgs.keys.values():
+                key.pressed = False
+                key.down = False
+                key.up = False 
+
+    def updateKeyboardEventArgsDOWN(self, downEvent):
+        """
+        EventManager.updateKeyboardEventArgsDOWN
+        - updates Keyboard Args for down
+
         list keyboard: all keyboard events
         """
 
-        self.keyboardEventArgs.pressed = set()
-        self.keyboardEventArgs.down = set()
-        self.keyboardEventArgs.up = set()
+        down = downEvent.key
 
-        for keyIndex in range(len(keyboard)):
-            key = keyboard[keyIndex] 
+        if down not in self.keyboardEventArgs.keys:
+            k = KeyEventArgs()
+            k.unicode = downEvent.unicode
 
-            keyArgs: KeyEventArgs
-            keyArgs = self.keyboardEventArgs.keys[keyIndex]
+            self.keyboardEventArgs.keys[down] = k
 
-            # key is pressed
-            if key:
-                keyArgs.sinceLastPress = 0
-                
-                # if held already
-                if keyArgs.holding >= 0:
-                    keyArgs.pressed = False
-                    keyArgs.holding += dt
+        k: KeyEventArgs
 
-                    self.keyboardEventArgs.down.add(keyIndex)
+        k = self.keyboardEventArgs.keys[down]
+        k.unicode = downEvent.unicode
 
-                else:
-                    keyArgs.pressed = True
-                    keyArgs.holding = 0
-                    keyArgs.down = True
+        k.down = True
 
-                    self.keyboardEventArgs.pressed.add(keyIndex)
-                    self.keyboardEventArgs.down.add(keyIndex)
+        if k.holding == -1:
+            k.holding = 0
+            k.pressed = True
+            k.sinceLastPress = -1
 
+            self.keyboardEventArgs.pressed.add(k)
+
+    def updateKeyboardEventArgsUP(self, upEvent):
+        """
+        EventManager.updateKeyboardEventArgsUP
+        - updates Keyboard Args for up
+
+        Event upEvent: pygame event.UP
+        """
+
+        up = upEvent.key
+
+        if up not in self.keyboardEventArgs.keys:
+            print("CRITICAL ERROR: Key not in keys")
+            return
+
+        k: KeyEventArgs
+        k = self.keyboardEventArgs.keys[up]
+
+        k.up = True
+        k.holding = -1
+        self.keyboardEventArgs.up.add(up)
+
+    def updateKeyboardEventArgsDt(self, dt: float):
+        """
+        EventManager.updateKeyboardEventArgsDt
+        - updates Keyboard Args (key.holding, key.sinceLastPress)
+
+        float dt: detla time
+        """
+
+        key: KeyEventArgs
+        for key in self.keyboardEventArgs.keys.values():
+            if key.holding != -1:
+                key.holding += dt
+                self.keyboardEventArgs.down.add(key)
+
+            if key.sinceLastPress < 0:
+                key.sinceLastPress = 0
             else:
-
-                # up
-                if keyArgs.holding >= 0:
-                    keyArgs.up = True
-                    keyArgs.holding = -1 # reset
-                    keyArgs.down = False
-
-                    self.keyboardEventArgs.up.add(keyIndex)
-
-                else:
-                    keyArgs.up = False
-
-                keyArgs.sinceLastPress += dt
+                key.sinceLastPress += dt
 
 # check for trigger Events ===========================================================================================================================================
     def triggerRegisterdEvents(self):
@@ -347,7 +363,7 @@ class EventManager:
             getattr(obj, event)(deepcopy(correspondingArgs))
 
             # if object is only obj to be called then break
-            if obj.onlyEventItemInForeground:
+            if mouseEvent and obj.onlyEventItemInForeground:
                 return True
         
         return False
@@ -432,5 +448,3 @@ class EventManager:
 
     def _keyUp(self) -> bool:
         return len(self.keyboardEventArgs.up) > 0
-    
-# TODO: implement hover somehow :shrug:

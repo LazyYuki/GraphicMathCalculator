@@ -1,4 +1,4 @@
-import warnings
+import warnings, pygame
 
 from EventManager.EventManager import EventManager
 from WindowOverlayHelper.WindowObject import WindowObject
@@ -25,14 +25,13 @@ class Window(WindowObject):
         # contains all objects from WindowObject
         self.objects = []
 
+        # color
+        self.showColor = False
+        self.color = (0, 0, 0)
+
         # set event manager
         self.eventManager = EventManager(self)
-
-    def getAllBases(self, classes):
-        bases = classes.__bases__
-
-        return [self.getAllBases(c) for c in bases] + bases
-
+        
     def addObject(self, obj: WindowObject) -> bool:
         """
         Window.addObject:
@@ -48,7 +47,12 @@ class Window(WindowObject):
         # TODO: getAllBases for finding WindowObject of Parent Parent... kms pls
 
         # check if obj is WindowObject or child of it
-        if obj.__class__.__bases__.count(WindowObject) + (obj.__class__ == WindowObject) == 0 or obj == self:
+        #if obj.__class__.__bases__.count(WindowObject) + (obj.__class__ == WindowObject) == 0 or obj == self:
+        if obj == self:
+            warnings.warn("Object cant be added to itself.")
+            return False
+
+        if not issubclass(obj.__class__, WindowObject):
             warnings.warn("Object is not WindowObject or child of it.")
             return False
 
@@ -138,6 +142,18 @@ class Window(WindowObject):
             for obj in self.objects:
                 obj.show(True, False)
 
+    def update(self, dt: float):
+        """
+        WindowObject.update:
+        - Updates every frame
+
+        return None
+        """
+        # loop through objects and render
+        obj: WindowObject
+        for obj in self.objects:
+            obj.update(dt)
+
     def render(self):
         """
         WindowObject.render:
@@ -145,6 +161,9 @@ class Window(WindowObject):
 
         return None
         """
+
+        if self.showColor:
+            pygame.draw.rect(self.screen, self.color, self.getRealRect())
 
         # sort for z value (foreground / background draw) -> z = 0, foreground
         self.objects.sort(key= lambda x: x.z, reverse=True)

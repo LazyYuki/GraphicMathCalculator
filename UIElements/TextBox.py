@@ -1,7 +1,7 @@
 import pygame
 
 from WindowOverlayHelper.WindowObject import WindowObject
-from EventManager.EventArgs import MouseEventArgs, KeyboardEventArgs
+from EventManager.EventArgs import *
 
 class TextBox(WindowObject):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
@@ -26,31 +26,31 @@ class TextBox(WindowObject):
             return
         
         # enter = get out of there
-        if pygame.K_RETURN in args.pressed:
+        if args.isPressed(pygame.K_RETURN):
             self.textBoxClicked = False
             return
         
         # delete last from text
-        if pygame.K_BACKSPACE in args.pressed:
+        if args.isPressed(pygame.K_BACKSPACE):
             if self.cursor != 0:
                 self.cursor -= 1
                 self.text = self.text[:-1]
 
             return
         
-        upperCase = (pygame.K_LSHIFT in args.down) or (pygame.K_RSHIFT in args.down)
-
-        print(args.down, upperCase)
-
+        upperCase = args.isDown(pygame.K_LSHIFT) or args.isDown(pygame.K_RSHIFT) 
+        
         # add keys to this
+        key: KeyEventArgs
         for key in args.pressed:
-            c = chr(key)
+            c = key.unicode
 
             if c.isalpha():
                 if upperCase:
-                    self.text += chr(key).upper()
+                    self.text += c.upper()
+                    continue
 
-            self.text += chr(key)
+            self.text += c
             self.cursor += 1
 
     def render(self):
