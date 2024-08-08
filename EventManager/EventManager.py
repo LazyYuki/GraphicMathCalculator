@@ -1,7 +1,7 @@
 import pygame
 from WindowOverlayHelper.WindowObject import WindowObject
 from EventManager.EventArgs import *
-from copy import deepcopy
+from copy import deepcopy, copy
 
 class EventManager:
     def __init__(self, parent: WindowObject) -> None:
@@ -27,6 +27,8 @@ class EventManager:
             "mouseHover" : list(),                # on every hover
             "mouseEnter" : list(),                # only on first hover 
             "mouseLeave" : list(),                # only on first leave
+            "mouseScrollUp" : list(),             # only on first scroll up
+            "mouseScrollDown" : list(),           # only on first scroll down
 
             # === keyboard ===
             "keyDown": list(),                  # on every key down
@@ -59,7 +61,9 @@ class EventManager:
             "mouseDown" : 0,            
             "mouseHover" : 0,        
             "mouseEnter" : 0,         
-            "mouseLeave" : 0,         
+            "mouseLeave" : 0,
+            "mouseScrollUp" : 0,
+            "mouseScrollDown" : 0,         
             "keyDown": 1,             
             "keyPress": 1,           
             "keyUp" : 1,                
@@ -194,6 +198,9 @@ class EventManager:
 
         self.mouseEventArgs.pos = (self.mouseEventArgs.x, self.mouseEventArgs.y)
 
+    def updateMouseScroll(self, event):
+        self.mouseEventArgs.scroll = event.y
+
     def clearKeyboardEventArgs(self):
             """
             EventManager.resetEventArgs:
@@ -201,6 +208,8 @@ class EventManager:
 
             return None
             """
+
+            self.mouseEventArgs.scroll = 0
 
             self.keyboardEventArgs.pressed = set()
             self.keyboardEventArgs.down = set()
@@ -360,7 +369,7 @@ class EventManager:
                     continue
 
             # execute function
-            getattr(obj, event)(deepcopy(correspondingArgs))
+            getattr(obj, event)(copy(correspondingArgs))
 
             # if object is only obj to be called then break
             if mouseEvent and obj.onlyEventItemInForeground:
@@ -438,6 +447,14 @@ class EventManager:
     def _mouseLeave(self) -> bool:
         return True
     
+    # == mouse scroll ==
+
+    def _mouseScrollUp(self) -> bool:
+        return self.mouseEventArgs.scroll > 0
+    
+    def _mouseScrollDown(self) -> bool:
+        return self.mouseEventArgs.scroll < 0
+
     # == keyboard ==
 
     def _keyDown(self) -> bool:

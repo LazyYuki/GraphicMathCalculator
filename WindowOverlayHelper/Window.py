@@ -102,14 +102,16 @@ class Window(WindowObject):
         return bool
         """
 
-        if not (self.lockDraw and lockDraw): 
+        if self.lockHide: return
+
+        if not (self.lockDraw or lockDraw): 
             self.draw = False
 
             obj: WindowObject
             for obj in self.objects:
                 obj.hide(False, True)
 
-        if not ( self.lockEvents and lockEvents):
+        if not ( self.lockEvents or lockEvents):
             self.events = False
 
             obj: WindowObject
@@ -128,19 +130,41 @@ class Window(WindowObject):
         return bool
         """
 
-        if not (self.lockDraw and lockDraw): 
+        if self.lockShow: return
+
+        if not (self.lockDraw or lockDraw): 
             self.draw = True
 
             obj: WindowObject
             for obj in self.objects:
                 obj.show(False, True)
 
-        if not ( self.lockEvents and lockEvents):
+        if not ( self.lockEvents or lockEvents):
             self.events = True
 
             obj: WindowObject
             for obj in self.objects:
                 obj.show(True, False)
+
+    def absoluteHide(self):
+        """
+        Window.absoluteHide:
+        - hide object from draw and all interaction
+        - pass to children
+        """
+
+        self.hide()
+        self.lockShow = True
+
+    def absoluteShow(self):
+        """
+        Window.absoluteHide:
+        - hide object from draw and all interaction
+        - pass to children
+        """
+
+        self.lockShow = False
+        self.show()
 
     def update(self, dt: float):
         """
@@ -154,6 +178,17 @@ class Window(WindowObject):
         for obj in self.objects:
             obj.update(dt)
 
+        for obj in self.objects:
+            obj.update(dt)
+
+    def idCheck(self, id):
+        o: WindowObject
+        for o in self.objects:
+            if o.ID == id:
+                return o
+            
+        return None
+
     def render(self):
         """
         WindowObject.render:
@@ -161,6 +196,9 @@ class Window(WindowObject):
 
         return None
         """
+
+        if self.draw == False:
+            return
 
         if self.showColor:
             pygame.draw.rect(self.screen, self.color, self.getRealRect())

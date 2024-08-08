@@ -35,6 +35,8 @@ class MouseEventArgs:
 
         self.pos = (0, 0)
 
+        self.scroll = 0
+
         self.hovered = []
 
 class KeyEventArgs:

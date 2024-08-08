@@ -1,11 +1,10 @@
 import pygame
 from typing import Self
 
-# shit imports :skull:
 from WindowOverlayHelper.Window import Window
 from UIElements.test import Test
-from UIElements.TextBox import TextBox
-from UIElements.Sidebar import Sidebar
+
+from UIElements.AllUIElements import *
 
 class ApplicationSettings:
 
@@ -35,29 +34,16 @@ class Application:
         pygame.init()
 
         self._screen = pygame.display.set_mode((self.settings.width, self.settings.height))
-        pygame.display.set_caption(f"{self.settings.title} | 0.1.0-beta")
+        pygame.display.set_caption(f"{self.settings.title} | 0.1.1-beta")
 
         self._clock = pygame.time.Clock()
 
-        # == debug shit von arwed ==
         self._mainWindow = Window(self._screen, 0, 0, 0, self.settings.width, self.settings.height)
 
+        self.container = Window(self._screen, 0, 0, 0, self.settings.width, self.settings.height)
         self.sidebar = Sidebar(self._screen, 10, 10, 0, 300, self.settings.height - 20)
 
-        self.subWindow = Window(self._screen, 100, 100, 1, 100, 100)
-
-        self.textBox = TextBox(self._screen, 250, 50, 1, 200, 40)
-        self.t = TextBox(self._screen, 250, 250, 1, 200, 40)
-
-        self._mainWindow.addObject(self.subWindow)
-        self._mainWindow.addObject(self.textBox)
-        self._mainWindow.addObject(self.t)
         self._mainWindow.addObject(self.sidebar)
-
-        #print(self._mainWindow.eventManager.allEvents)
-        #print(self._mainWindow.eventManager.subManagerObjects)
-
-        self.subWindow.onlyEventItemInForeground = False
 
         return True
 
@@ -80,6 +66,9 @@ class Application:
 
                     case pygame.KEYUP:
                         self._mainWindow.eventManager.updateKeyboardEventArgsUP(event)
+
+                    case pygame.MOUSEWHEEL:
+                        self._mainWindow.eventManager.updateMouseScroll(event)
 
             self._mainWindow.eventManager.updateKeyboardEventArgsDt(deltaTime)
             self._mainWindow.eventManager.updateMouseEventArgs(deltaTime, pygame.mouse)

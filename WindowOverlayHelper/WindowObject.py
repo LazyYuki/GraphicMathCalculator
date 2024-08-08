@@ -33,6 +33,8 @@ class WindowObject():
         self.realWidth = width
         self.realHeight = height
 
+        self.ID = ""                   # unique ID for object
+
         # === event ====
         self.draw = True                # if it should be drawn
         self.events = True              # if it should run events
@@ -41,6 +43,9 @@ class WindowObject():
 
         self.lockDraw = False            # show() / hide() wont change self.draw
         self.lockEvents = False          # show() / hide() wont change self.events
+
+        self.lockShow = False           # show() wont change self.draw
+        self.lockHide = False           # hide() wont change self.draw
 
     def calcRealPosition(self):
         """
@@ -59,6 +64,12 @@ class WindowObject():
 
             self.realWidth = self.realS - self.realX
             self.realHeight = self.realT - self.realY
+
+            if self.realWidth < 0:
+                self.realWidth = 0
+
+            if self.realHeight < 0: 
+                self.realHeight = 0
 
     def getSpecialAreaLimit(self, x: int, y: int) -> bool:
         """
@@ -86,10 +97,12 @@ class WindowObject():
         return bool
         """
 
-        if not (self.lockDraw and lockDraw): 
+        if self.lockHide: return
+
+        if not (self.lockDraw or lockDraw): 
             self.draw = False
 
-        if not ( self.lockEvents and lockEvents):
+        if not ( self.lockEvents or lockEvents):
             self.events = False
 
     def show(self, lockDraw = False, lockEvents = False):
@@ -103,10 +116,12 @@ class WindowObject():
         return bool
         """
 
-        if not (self.lockDraw and lockDraw): 
+        if self.lockShow: return
+
+        if not (self.lockDraw or lockDraw): 
             self.draw = True
 
-        if not ( self.lockEvents and lockEvents): 
+        if not ( self.lockEvents or lockEvents): 
             self.events = True
 
     def getRealRect(self) -> pygame.Rect:

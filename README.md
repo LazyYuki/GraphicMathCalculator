@@ -9,4 +9,8 @@
 + Lohnt sich objectPixleMap??? scheint langsam zu sein aber ist eine theoretische optimierung (aktiviert in event manager register events letzte zeile)
 + Frage: Doppelclick benötigt oder nicht
 
-test
+Quellen
++ https://www.svgrepo.com/svg/517694/math-wiki 
++ https://www.svgrepo.com/svg/342019/matrix
++ https://www.svgrepo.com/svg/469071/integral
++ https://www.svgrepo.com/svg/384248/gambling-dice-dices-casino
