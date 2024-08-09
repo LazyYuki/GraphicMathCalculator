@@ -333,6 +333,9 @@ class EventManager:
         - if it should stop current cycle because of WindowObject.onlyEventItemInForeground
         """
 
+        if self.windowParent.events == False:
+            return
+
         mouseEvent = type(correspondingArgs) == MouseEventArgs
 
         if mouseEvent and not self.windowParent.getRealRect().collidepoint(self.mouseEventArgs.pos):
@@ -356,6 +359,9 @@ class EventManager:
 
         obj: WindowObject
         for obj in objects:
+            if obj.events == False:
+                return
+
             # mouse is not on object
             if mouseEvent and not obj.getRealRect().collidepoint(self.mouseEventArgs.pos):
                 continue
