@@ -52,10 +52,11 @@ class TextBox(Window):
         self.changeStyle(textBoxStyle, text)
 
         self.textBoxClicked = False
-        self.text = ""
         self.cursor = 0
 
-        self.text = Text(screen, 0, 0, 0,)
+        self.text = Text(screen, 0, 0, 0, width, height, text=text)
+        self.font = self.text.font
+        self.text = text
 
     def changeStyle(self, textBoxStyle: TextBoxStyle, text = None):
         self.textBoxStyle = copy.deepcopy(textBoxStyle)
@@ -75,6 +76,7 @@ class TextBox(Window):
         self.addObject(self.text)
 
     def mouseOnClick(self, args: MouseEventArgs):
+        self.text = ""
         self.textBoxClicked = True 
 
     def keyPress(self, args: KeyboardEventArgs):
@@ -111,6 +113,9 @@ class TextBox(Window):
 
             self.text += c
             self.cursor += 1
+
+    def get_text(self):
+        return self.text
 
     def render(self):
         if self.textBoxClicked:
