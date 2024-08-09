@@ -15,7 +15,8 @@ class Text(WindowObject):
         self.renderOldWidth = width
 
         # self.font = pygame.font.SysFont("monospace", self.height)
-        self.font = pygame.font.Font(os.getcwd() + "\\" + fontPath.replace("/", "\\"), fontSize)
+        # self.font = pygame.font.Font(os.getcwd() + "\\" + fontPath.replace("/", "\\"), fontSize)
+        self.font = pygame.font.Font(os.getcwd() + "/" + fontPath.replace("\\", "/"), fontSize)
 
         self.center = False
         self.verticalCenter = False

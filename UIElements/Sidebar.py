@@ -133,7 +133,7 @@ class Sidebar(Window):
         w = subWindow.width
 
         for f in sub:
-            if f.is_dir():
+            if f.is_dir() and not f.name.startswith("__"):
                 subWindow.addObject(Text(self.screen, indent, subWindow.helperVarMainNavigation, 0, w - indent, self.mainNavigationSubWindowDirHeight, f.name, fontSize=25))
                 subWindow.helperVarMainNavigation += self.mainNavigationSubWindowDirHeight + 5
 
@@ -144,7 +144,7 @@ class Sidebar(Window):
 
                 b = Button(self.screen, 0, subWindow.helperVarMainNavigation, 0, 
                            w, self.mainNavigationSubWindowFileHeight, 
-                           buttonStyle=ButtonStyles.sidebarMainNavigation, onClick=(lambda b, x, y: [x.close()]), onClickArg=self, text=f.name.replace(".py", "").replace("_", " "))
+                           buttonStyle=ButtonStyles.sidebarMainNavigation, onClick=(lambda b, x, y: [self.close(), self.loadSubWindow(x)]), onClickArg=f.path, text=f.name.replace(".py", "").replace("_", " "))
                 b.text.indent = indent
 
                 subWindow.addObject(b)
@@ -166,10 +166,14 @@ class Sidebar(Window):
         else:
             mod = importlib.import_module(path.replace("/", ".").replace("\\", ".").replace(".py", ""))
             
-            if hasattr(mod, "module") and mod.module != None:
-                self.container.addObject(mod.module(self.screen, 0, 0, 0, self.container.width, self.container.height))
-                mod.module.absoluteShow()
+            print(mod.__name__)
 
+            if hasattr(mod, "module") and mod.module != None:
+                m = mod.module(self.screen, 0, 0, 0, self.container.width, self.container.height)
+                self.container.addObject(m)
+                m.ID = path
+                m.absoluteShow()
+                
     def setMainNavigationPanel(self, panel: Window):
         self.mainNavigation.addObject(panel)
 
