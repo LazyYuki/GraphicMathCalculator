@@ -12,14 +12,14 @@ class Derivitive(Window):
         self.addObject(header)
 
         self.addObject(Text(screen, 10, 100, 0, 300, 100, "Funktion:"))
-        self.func_inp = TextBox(screen, 200, 200, 0, 300, 25, "Funktion eingeben")
+        self.func_inp = TextBox(screen, 200, 200, 0, 300, 50, "Funktion eingeben: ")
         self.submit = Button(screen, 10, 300, 0, 300, 100, text="Ableitung bilden", onClick=self.calc_derivitive)
-        
+
         self.addObject(self.func_inp)
         self.addObject(self.submit)
 
     def calc_derivitive(self, btn, on_clickarg, args):
-        func = self.func_inp.get_text()
+        func = self.func_inp.getText()
         x = sympy.symbols("x")
         derivitive = sympy.diff(func, x)
         print(derivitive)

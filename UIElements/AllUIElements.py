@@ -4,3 +4,4 @@ from UIElements.Sidebar import *
 from UIElements.Text import *
 from UIElements.TextBox import *
 from UIElements.ScrollWindow import *
+from UIElements.Slider import Slider

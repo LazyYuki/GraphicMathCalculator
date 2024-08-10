@@ -10,3 +10,9 @@ class Color:
     BLUE3 = (81,90,231)
 
     DARK1 = (17,25,38)
+    GRAY1 = (65, 65, 65)
+
+    NAVYBLUE = (0, 0, 128)
+    ROYALBLUE = (65, 105, 225)
+    PERSIANBLUE = (0, 166, 147)
+    MAYABLUE = (115, 194, 251)

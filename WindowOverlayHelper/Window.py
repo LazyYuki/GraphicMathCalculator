@@ -75,6 +75,39 @@ class Window(WindowObject):
 
         return True
     
+    def removeObject(self, obj: WindowObject) -> bool:
+        """
+        Window.removeObject:
+        - removes Object from Window render list
+        - checks if obj is WindowObject or child from WindowObject
+
+        WindowObject obj: object to be removed
+
+        return bool
+        - if removing the object succeded or not
+        """
+
+        # check if obj is WindowObject or child of it
+        if not issubclass(obj.__class__, WindowObject):
+            warnings.warn("Object is not WindowObject or child of it.")
+            return False
+
+        # check if it has parent already
+        if obj.parent != self:
+            warnings.warn("Object is not child of this parent.")
+            return False
+
+        # set parent
+        obj.parent = None
+
+        # remove from objects that are managed
+        self.objects.remove(obj)
+
+        # register in event Manager
+        self.eventManager.unregisterEvent(obj)
+
+        return True
+
     def calcRealPosition(self):
         """
         WindowObject.calcRealPosition:

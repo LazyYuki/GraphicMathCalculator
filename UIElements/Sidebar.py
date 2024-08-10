@@ -165,8 +165,6 @@ class Sidebar(Window):
             activeWindow.absoluteShow()
         else:
             mod = importlib.import_module(path.replace("/", ".").replace("\\", ".").replace(".py", ""))
-            
-            print(mod.__name__)
 
             if hasattr(mod, "module") and mod.module != None:
                 m = mod.module(self.screen, 0, 0, 0, self.container.width, self.container.height)

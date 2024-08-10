@@ -29,6 +29,8 @@ class EventManager:
             "mouseLeave" : list(),                # only on first leave
             "mouseScrollUp" : list(),             # only on first scroll up
             "mouseScrollDown" : list(),           # only on first scroll down
+            "mouseOnUpAlways" : list(),           # always on mouse up
+            "mouseDownAlways" : list(),           # always on mouse down
 
             # === keyboard ===
             "keyDown": list(),                  # on every key down
@@ -63,7 +65,9 @@ class EventManager:
             "mouseEnter" : 0,         
             "mouseLeave" : 0,
             "mouseScrollUp" : 0,
-            "mouseScrollDown" : 0,         
+            "mouseScrollDown" : 0,
+            "mouseOnUpAlways" : 0,
+            "mouseDownAlways" : 0,        
             "keyDown": 1,             
             "keyPress": 1,           
             "keyUp" : 1,                
@@ -111,6 +115,26 @@ class EventManager:
                 self.allEvents[method].append(obj) # obj passed as pointer so memory will be okay
 
         # self.calcObjectPixelMap()
+
+    def unregisterEvent(self, obj: WindowObject):
+        """
+        EventManager.unregisterEvent:
+        - removes object from all events
+
+        WindowObject obj: object to be removed
+
+        return None
+        """
+
+        for method in dir(obj):
+            if method.startswith("__"):
+                continue
+
+            if method == "eventManager" and obj != self.windowParent:
+                self.subManagerObjects.remove(obj)
+
+            if callable(getattr(obj, method)) and method in self.allEvents:
+                self.allEvents[method].remove(obj)
                 
     def setMouseEventArgs(self, mEvent: MouseEventArgs):
         """
@@ -177,6 +201,7 @@ class EventManager:
                     self.mouseEventArgs.mouseHolding[i] = 0
                     self.mouseEventArgs.mouseClicked[i] = True
             else:
+                self.mouseEventArgs.mouseClicked[i] = False
                 # up
                 if self.mouseEventArgs.mouseHolding[i] >= 0:
                     self.mouseEventArgs.mouseUp[i] = True
@@ -197,6 +222,10 @@ class EventManager:
         self.mouseEventArgs.x, self.mouseEventArgs.y = mouse.get_pos()
 
         self.mouseEventArgs.pos = (self.mouseEventArgs.x, self.mouseEventArgs.y)
+
+        if self.mouseEventArgs.clicked == True:
+            if mouse.get_pressed(num_buttons=3) == (0, 0, 0):
+                print("here")
 
     def updateMouseScroll(self, event):
         self.mouseEventArgs.scroll = event.y
@@ -338,7 +367,7 @@ class EventManager:
 
         mouseEvent = type(correspondingArgs) == MouseEventArgs
 
-        if mouseEvent and not self.windowParent.getRealRect().collidepoint(self.mouseEventArgs.pos):
+        if mouseEvent and not self.windowParent.getRealRect().collidepoint(self.mouseEventArgs.pos) and not event.endswith("Always"):
             return False
         
         # run event for all sub objects
@@ -363,7 +392,7 @@ class EventManager:
                 return
 
             # mouse is not on object
-            if mouseEvent and not obj.getRealRect().collidepoint(self.mouseEventArgs.pos):
+            if mouseEvent and not obj.getRealRect().collidepoint(self.mouseEventArgs.pos) and not event.endswith("Always"):
                 continue
 
             # for hover since its special
@@ -419,6 +448,9 @@ class EventManager:
     def _mouseOnUp(self) -> bool:
         return self.mouseEventArgs.up
     
+    def _mouseOnUpAlways(self) -> bool:
+        return self.mouseEventArgs.up
+    
     def _mouseOnUpLeft(self) -> bool:
         return self.mouseEventArgs.mouseUp[0]
     
@@ -431,6 +463,9 @@ class EventManager:
     # == mouse down ==
 
     def _mouseDown(self) -> bool:
+        return self._mouseDownLeft() or self._mouseDownMiddle() or self._mouseDownRight()
+    
+    def _mouseDownAlways(self) -> bool:
         return self._mouseDownLeft() or self._mouseDownMiddle() or self._mouseDownRight()
 
     def _mouseDownLeft(self) -> bool:

@@ -34,7 +34,7 @@ class Application:
         pygame.init()
 
         self._screen = pygame.display.set_mode((self.settings.width, self.settings.height))
-        pygame.display.set_caption(f"{self.settings.title} | 0.1.1-beta")
+        pygame.display.set_caption(f"{self.settings.title} | 0.1.2-beta")
 
         self._clock = pygame.time.Clock()
 

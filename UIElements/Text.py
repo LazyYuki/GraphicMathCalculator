@@ -25,6 +25,10 @@ class Text(WindowObject):
 
         self.clampTextToWidth()
 
+    def setText(self, text):
+        self.text = text
+        self.clampTextToWidth()
+
     def clampTextToWidth(self):
         s = ""
 
