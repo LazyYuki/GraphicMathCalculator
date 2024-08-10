@@ -34,7 +34,6 @@ class Text(WindowObject):
 
         for c in self.text:
             if self.font.size(s + c)[0] + self.indent > self.realWidth:
-                s += " "
                 continue
 
             s += c

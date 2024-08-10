@@ -373,7 +373,7 @@ class EventManager:
         # run event for all sub objects
         for obj in sorted(self.subManagerObjects, key = lambda x: x.z, reverse=True):
             if obj.eventManager.runEvent(event, correspondingArgs, False):
-                    return True
+                return True
 
         # sort objects
         objects = sorted(self.allEvents[event], key = lambda x: x.z, reverse=True)

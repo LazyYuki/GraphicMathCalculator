@@ -16,6 +16,7 @@ class TextBoxStyle:
 
         self.boxColor = (0, 0, 0)
         self.clickColor = (255, 0, 0)
+        self.forceClickedShow = False
 
         self.borderRadius = 0
         self.borderWidth = 0
@@ -49,8 +50,11 @@ class TextBoxStyles:
     matrix = TextBoxStyle()
     matrix.noRect = True
     matrix.forceHoverShow = True
+    matrix.forceClickedShow = True
+    matrix.clickColor = Color.DARK1
     matrix.borderRadius = 15
     matrix.text = ""
+    matrix.fontSize = 20
 
 class TextBox(Window):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, standardText = "", text = "", textBoxStyle = TextBoxStyles.basic) -> None:
@@ -67,6 +71,12 @@ class TextBox(Window):
         self.clicked = False
         self.cursor = 0
         self.hoverd = False
+
+        self.onChangeText = None
+        self.onChangeTextArgs = None
+
+        self.onEnter = None
+        self.onEnterArgs = None
 
     def changeStyle(self, textBoxStyle: TextBoxStyle, text = None):
         self.textBoxStyle = copy.deepcopy(textBoxStyle)
@@ -113,12 +123,7 @@ class TextBox(Window):
         
         # enter = get out of there
         if args.isPressed(pygame.K_RETURN):
-            self.clicked = False
-
-            if self.text.text == "":
-                self.text.setText(self.standardText)
-
-            self.styleRect.color = self.textBoxStyle.boxColor
+            self.enter()
 
             return
         
@@ -149,6 +154,20 @@ class TextBox(Window):
 
         self.text.setText(t)
 
+        if self.onChangeText != None:
+            self.onChangeText(self.onChangeTextArgs)
+
+    def enter(self):
+        self.clicked = False
+
+        if self.text.text == "":
+            self.text.setText(self.standardText)
+
+        self.styleRect.color = self.textBoxStyle.boxColor
+
+        if self.onEnter != None:
+            self.onEnter(self.onEnterArgs)
+
     def getText(self):
         return self.text.text
 
@@ -157,11 +176,8 @@ class TextBox(Window):
         self.cursor = len(text)
 
     def render(self):
-        if not self.textBoxStyle.noRect or (self.textBoxStyle.forceHoverShow and self.hoverd):
+        if not self.textBoxStyle.noRect or (self.textBoxStyle.forceHoverShow and self.hoverd) or (self.textBoxStyle.forceClickedShow and self.clicked):
             self.styleRect.render()
 
         if not self.textBoxStyle.noText:
             self.text.render()
-
-        # self.screen.blit(r, (self.realX, self.realY))
-        # pygame.draw.rect(self.screen, self.color, pygame.Rect(self.realX, self.realY, self.realWidth, self.realHeight), 1)

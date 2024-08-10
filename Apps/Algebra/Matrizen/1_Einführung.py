@@ -11,15 +11,24 @@ class MatrizenEinführung(Window):
         self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Matrix - Einfuehrung", fontSize=70, fontPath="Assets/Fonts/HEADLINE.ttf")
         self.headline.center = True
 
-        self.sliderText = Text(self.screen, 10, 230, 0, 200, 25, "", fontSize=20)
-        self.sliderText.center = True
-        self.slider = Slider(self.screen, 10, 200, 0, 200, 25, onValueChange=lambda a, b: self.sliderText.setText(str(a.value)))
-        
-        self.matrix = Matrix(self.screen, 10, 300, 0, 500, 500)
+        self.matrix = Matrix(self.screen, 340, 200, 0, 600, 600)
         self.matrix.changeSize(3, 3)
 
-        self.addObject(self.sliderText)
-        self.addObject(self.slider)
+        t = Text(self.screen, 10, 200, 0, 100, 25, "m:", fontSize=20)
+        t.verticalCenter = True
+        self.addObject(t)
+        t = Text(self.screen, 10, 230, 0, 100, 25, "n:", fontSize=20)
+        t.verticalCenter = True
+        self.addObject(t)
+
+        s = Slider(self.screen, 120, 200, 0, 200, 25, onValueChange=lambda a, b: self.matrix.changeSize(m = int(a.value)))
+        s.maxValue = 5
+        self.addObject(s)
+
+        f = Slider(self.screen, 120, 230, 0, 200, 25, onValueChange=lambda a, b: self.matrix.changeSize(n = int(a.value)))
+        f.maxValue = 5
+        self.addObject(f)
+
         self.addObject(self.headline)
 
         self.addObject(self.matrix)
