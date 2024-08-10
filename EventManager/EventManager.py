@@ -365,9 +365,9 @@ class EventManager:
         if self.windowParent.events == False:
             return
 
-        mouseEvent = type(correspondingArgs) == MouseEventArgs
+        mouseEvent = type(correspondingArgs) == MouseEventArgs and not event.endswith("Always")
 
-        if mouseEvent and not self.windowParent.getRealRect().collidepoint(self.mouseEventArgs.pos) and not event.endswith("Always"):
+        if mouseEvent and not self.windowParent.getRealRect().collidepoint(self.mouseEventArgs.pos):
             return False
         
         # run event for all sub objects
@@ -392,7 +392,7 @@ class EventManager:
                 return
 
             # mouse is not on object
-            if mouseEvent and not obj.getRealRect().collidepoint(self.mouseEventArgs.pos) and not event.endswith("Always"):
+            if mouseEvent and not obj.getRealRect().collidepoint(self.mouseEventArgs.pos):
                 continue
 
             # for hover since its special

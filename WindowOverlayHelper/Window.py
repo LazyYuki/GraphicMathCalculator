@@ -44,8 +44,6 @@ class Window(WindowObject):
         - if adding the object succeded or not
         """
 
-        # TODO: getAllBases for finding WindowObject of Parent Parent... kms pls
-
         # check if obj is WindowObject or child of it
         #if obj.__class__.__bases__.count(WindowObject) + (obj.__class__ == WindowObject) == 0 or obj == self:
         if obj == self:
@@ -242,5 +240,6 @@ class Window(WindowObject):
         # loop through objects and render
         obj: WindowObject
         for obj in self.objects:
-            obj.render()
+            if obj.draw == True:
+                obj.render()
 

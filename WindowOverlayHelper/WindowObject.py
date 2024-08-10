@@ -39,7 +39,7 @@ class WindowObject():
         self.draw = True                # if it should be drawn
         self.events = True              # if it should run events
 
-        self.onlyEventItemInForeground = False   # all events in this area will only activate for this obj (if its on top of clicked)
+        self.onlyEventItemInForeground = True   # all events in this area will only activate for this obj (if its on top of clicked)
 
         self.lockDraw = False            # show() / hide() wont change self.draw
         self.lockEvents = False          # show() / hide() wont change self.events
@@ -104,6 +104,14 @@ class WindowObject():
 
         if not ( self.lockEvents or lockEvents):
             self.events = False
+
+    def absoluteHide(self):
+        self.lockDraw = True
+        self.draw = False
+
+    def absoluteShow(self):
+        self.lockDraw = False
+        self.draw = True
 
     def show(self, lockDraw = False, lockEvents = False):
         """

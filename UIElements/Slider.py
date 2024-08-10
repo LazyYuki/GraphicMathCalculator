@@ -74,9 +74,12 @@ class Slider(Window):
         self.onValueChangeArgs = onValueChangeArgs
 
         self.value = self.minValue
-        self.setValue(self.value)   
+        self.setValue(self.value - 1)   
         
     def setValue(self, newValue, functionCall = True):
+        if self.value == newValue:
+            return
+
         if self.value < self.minValue:
             self.value = self.minValue
 
@@ -86,7 +89,7 @@ class Slider(Window):
         else:
             self.value = newValue
 
-        self.styleCircle.x = self.value / self.maxValue * (self.width - self.height)
+        self.styleCircle.x = (self.value - self.minValue) / (self.maxValue - self.minValue) * (self.width - self.height)
         self.styleRectLeft.width = self.styleCircle.x
 
         if functionCall and self.onValueChange != None:
@@ -94,11 +97,11 @@ class Slider(Window):
 
     def setMinValue(self, minValue):
         self.minValue = minValue
-        self.setValue(self.value)
+        self.setValue(self.minValue)
 
     def setMaxValue(self, maxValue):
         self.maxValue = maxValue
-        self.setValue(self.value)       
+        self.setValue(self.minValue)       
 
     def getValueFromRealX(self, args):
         theoreticalX = args.x - self.realX - self.height / 2
