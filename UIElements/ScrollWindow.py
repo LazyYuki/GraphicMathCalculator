@@ -1,6 +1,7 @@
 import pygame, copy
 
 from WindowOverlayHelper.Window import Window
+from WindowOverlayHelper.WindowObject import WindowObject
 from EventManager.EventArgs import MouseEventArgs, KeyboardEventArgs
 
 class ScrollWindow(Window):
@@ -38,3 +39,14 @@ class ScrollWindow(Window):
 
             for obj in self.objects:
                 obj.y += self.scrollSpeed
+
+    def update(self, dt: float):
+        super().update(dt)
+
+        obj: WindowObject
+        for obj in self.objects:
+            if obj.realY + obj.realHeight > 0 and obj.realY < self.realHeight:
+                obj.absoluteShow()
+            else:
+                obj.absoluteHide()
+            

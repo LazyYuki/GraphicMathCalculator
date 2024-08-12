@@ -70,12 +70,9 @@ class Matrix(Window):
         self.bracket2Down.br_tl = 100
         self.bracket2Down.br_bl = 100
 
-        self.addObject(self.bracket1Top)
-        self.addObject(self.bracket1Middle)
-        self.addObject(self.bracket1Down)
-        self.addObject(self.bracket2Top)
-        self.addObject(self.bracket2Middle)
-        self.addObject(self.bracket2Down)
+        bracket: Rect
+        for bracket in [self.bracket1Top, self.bracket1Middle, self.bracket1Down, self.bracket2Top, self.bracket2Middle, self.bracket2Down]:
+            self.addObject(bracket)
 
         self.calcBracketPosition()
 
@@ -87,7 +84,55 @@ class Matrix(Window):
         self.showAntiDiagonal = False
 
         self.textBoxLocked = False
-    
+
+        self.showRowRect = Rect(screen, 0, 0, 0, 0, 0, color=Color.RED, borderRadius=15, borderWidth=3)
+        self.showColumnRect = Rect(screen, 0, 0, 0, 0, 0, color=Color.GREEN, borderRadius=15, borderWidth=3)
+        self.showMainDiagonalRect = RotatableRect(screen, 0, 0, 0, 0, 0, color=Color.PURPLE, borderRadius=15, borderWidth=3)
+        self.showAntiDiagonalRect = RotatableRect(screen, 0, 0, 0, 0, 0, color=Color.YELLOW, borderRadius=15, borderWidth=3)
+
+        show: Rect
+        for show in [self.showRowRect, self.showColumnRect, self.showMainDiagonalRect, self.showAntiDiagonalRect]:
+            self.addObject(show)
+            show.absoluteHide()
+
+        self.calcShowRectPos()
+
+    def calcShowRectPos(self):
+        generaleSize = self.cellSize + self.outerPadding
+
+        self.showRowRect.x = self.outerPadding / 2
+        self.showRowRect.y = self.outerPadding / 2
+        self.showRowRect.width = self.bracket2Middle.x - self.bracket1Middle.x - self.outerPadding
+        self.showRowRect.height = generaleSize
+
+        self.showColumnRect.x = self.outerPadding / 2
+        self.showColumnRect.y = self.outerPadding / 2
+        self.showColumnRect.width = generaleSize
+        self.showColumnRect.height = self.bracket1Middle.height - self.outerPadding
+
+        tmp_1 = min(self.m, self.n) * (self.cellSize + self.innerPadding)
+        tmp_2 = min(self.bracket2Middle.x, self.bracket1Middle.height) / 2
+
+        self.showMainDiagonalRect.x = 0
+        self.showMainDiagonalRect.y = 0
+        self.showMainDiagonalRect.setSize(
+            generaleSize,
+            math.sqrt(math.pow(tmp_1, 2) * 2)
+        )
+        self.showMainDiagonalRect.center = (tmp_2, tmp_2)
+        self.showMainDiagonalRect.setAngle(45)
+
+        self.showAntiDiagonalRect.x = 0
+        self.showAntiDiagonalRect.y = 0
+        self.showAntiDiagonalRect.setSize(
+            generaleSize,
+            math.sqrt(math.pow(tmp_1, 2) * 2)
+        )
+        self.showAntiDiagonalRect.center = (tmp_2, tmp_2 - 1)
+        self.showAntiDiagonalRect.setAngle(-45)
+
+        self.calcRealPosition()
+
     def calcBracketPosition(self):
         self.bracket1Top.width = self.cellSize / 4 + self.outerPadding
 
@@ -108,6 +153,7 @@ class Matrix(Window):
         self.bracket2Down.y = self.bracket1Down.y
         self.bracket2Down.width = self.bracket1Down.width
 
+        self.calcRealPosition()
 
     def changeSize(self, m = None, n = None):
         if m == None:
@@ -155,6 +201,9 @@ class Matrix(Window):
         self.calcBracketPosition()
         self.setIndizesTextBox(self.showIndizes)
         self.lockTextBoxObjects(not self.showIndizes)
+        self.calcShowRectPos()
+
+        self.calcRealPosition()
 
     def createTextBoxObjects(self):
         for i in range(len(self.textBoxObjectMatrix)):
@@ -163,7 +212,7 @@ class Matrix(Window):
                     continue
                 
                 t = TextBox(self.screen,
-                    self.outerPadding + (self.cellSize + self.innerPadding) * j, self.outerPadding + (self.cellSize + self.innerPadding) * i, 0, 
+                    self.outerPadding + (self.cellSize + self.innerPadding) * j, self.outerPadding + (self.cellSize + self.innerPadding) * i, 1, 
                     self.cellSize, self.cellSize, textBoxStyle=self.textBoxStyle)
                 t.setText(str(self.numberMatrix[i][j]))
                 t.i = i
@@ -194,34 +243,59 @@ class Matrix(Window):
 
         v = True if lock else False
 
-
         for i in range(len(self.textBoxObjectMatrix)):
             for j in range(len(self.textBoxObjectMatrix[i])):
                 self.textBoxObjectMatrix[i][j].lockEvents = not v
                 self.textBoxObjectMatrix[i][j].events = v
 
-    def setIndizesTextBox(self, show = None):
+                self.textBoxObjectMatrix[i][j].clicked = False
+
+    def setIndizesTextBox(self, show = None, color = None):
         if show == None:
             show = self.showIndizes
             self.showIndizes = not self.showIndizes
         else:
             self.showIndizes = show
 
+        if color == None:
+            color = Color.BLUE1
+
         for i in range(len(self.textBoxObjectMatrix)):
             for j in range(len(self.textBoxObjectMatrix[i])):
                 self.textBoxObjectMatrix[i][j].setText(str(i + 1) + str(j + 1) if self.showIndizes else str(self.numberMatrix[i][j]))
+                self.textBoxObjectMatrix[i][j].text.color = color if self.showIndizes else self.textBoxStyle.textColor
 
-    def setMainDiagonal(self, v):
+    def setShowMainDiagonal(self, v):
         self.showMainDiagonal = v
 
-    def setRow(self, v):
+        if self.showMainDiagonal:
+            self.showMainDiagonalRect.absoluteShow()
+        else:
+            self.showMainDiagonalRect.absoluteHide()
+
+    def setShowRow(self, v):
         self.showRow = v
 
-    def setColumn(self, v):
+        if self.showRow:
+            self.showRowRect.absoluteShow()
+        else:
+            self.showRowRect.absoluteHide()
+
+    def setShowColumn(self, v):
         self.showColumn = v
 
-    def setAntiDiagonal(self, v):
+        if self.showColumn:
+            self.showColumnRect.absoluteShow()
+        else:
+            self.showColumnRect.absoluteHide()
+
+    def setShowAntiDiagonal(self, v):
         self.showAntiDiagonal = v
+
+        if self.showAntiDiagonal:
+            self.showAntiDiagonalRect.absoluteShow()
+        else:
+            self.showAntiDiagonalRect.absoluteHide()
 
     def render(self):
         if self.numberMatrix is None:

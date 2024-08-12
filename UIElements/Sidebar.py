@@ -68,7 +68,8 @@ class Sidebar(Window):
         self.quickbarRect = Rect(screen, 0, 0, 0, self.closedSidebarWidth, height, Color.BLUE1)
         self.quickbar.addObject(self.quickbarRect)
 
-        mainButton = ButtonImage(self.screen, 0, 0, 0, self.closedSidebarWidth, self.closedSidebarWidth, "Assets/Images/MathIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar)
+        mainButton = ButtonImage(self.screen, 0, 0, 0, self.closedSidebarWidth, self.closedSidebarWidth, "Assets/Images/MathIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
+                                 onClick=(lambda b, x, y: [self.close(), self.loadSubWindow("Apps/Home.py")]), onClickArg=self)
         mainButton.buttonStyle.noRect = True
         mainButton.buttonStyle.imageSize = (45, 45)
         mainButton.changeStyle(mainButton.buttonStyle)
@@ -108,6 +109,9 @@ class Sidebar(Window):
         # animation
         self.animationSpeed = 1
 
+        # start window
+        mainButton.mouseOnClick(None)
+
     def quickbarButtonShow(self, i, ab = None):
         for w in self.mainNavigationWindows:
             w.absoluteHide()
@@ -144,7 +148,8 @@ class Sidebar(Window):
 
                 b = Button(self.screen, 0, subWindow.helperVarMainNavigation, 0, 
                            w, self.mainNavigationSubWindowFileHeight, 
-                           buttonStyle=ButtonStyles.sidebarMainNavigation, onClick=(lambda b, x, y: [self.close(), self.loadSubWindow(x)]), onClickArg=f.path, text=f.name.replace(".py", "").replace("_", " "))
+                           buttonStyle=ButtonStyles.sidebarMainNavigation, onClick=(lambda b, x, y: [self.close(), self.loadSubWindow(x)]), onClickArg=f.path, 
+                           text=f.name.replace(".py", "").replace("_", " "))
                 b.text.indent = indent
 
                 subWindow.addObject(b)

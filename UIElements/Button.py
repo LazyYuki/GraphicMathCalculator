@@ -145,7 +145,7 @@ class ButtonImage(Button):
         super().changeStyle(buttonStyle)
 
         self.image = pygame.image.load(self.imagePath)
-        self.image = pygame.transform.scale(self.image, self.buttonStyle.imageSize)
+        self.image = pygame.transform.smoothscale(self.image, self.buttonStyle.imageSize)
 
         self.centerCoords = (self.width // 2, self.height // 2)
 

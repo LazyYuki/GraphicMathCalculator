@@ -6,3 +6,4 @@ from UIElements.TextBox import *
 from UIElements.ScrollWindow import *
 from UIElements.Slider import Slider
 from UIElements.CheckBox import CheckBox
+from UIElements.Image import *
