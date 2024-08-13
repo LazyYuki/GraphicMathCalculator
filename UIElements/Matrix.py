@@ -95,6 +95,10 @@ class Matrix(Window):
             self.addObject(show)
             show.absoluteHide()
 
+        # ==
+
+        self.center = False
+
         self.calcShowRectPos()
 
     def calcShowRectPos(self):
@@ -166,6 +170,10 @@ class Matrix(Window):
 
         if m < 1 or n < 1:
             return
+        
+        tmp = self.center
+        self.setCenter(False)
+        self.center = tmp
 
         if self.numberMatrix is None:
             self.numberMatrix = [[0 for _ in range(n)] for _ in range(m)]
@@ -200,9 +208,10 @@ class Matrix(Window):
 
         self.calcBracketPosition()
         self.setIndizesTextBox(self.showIndizes)
-        self.lockTextBoxObjects(not self.showIndizes)
+        self.lockTextBoxObjects(self.textBoxLocked)
         self.calcShowRectPos()
-
+        
+        self.setCenter(self.center)
         self.calcRealPosition()
 
     def createTextBoxObjects(self):
@@ -241,7 +250,7 @@ class Matrix(Window):
         else:
             self.textBoxLocked = lock
 
-        v = True if lock else False
+        v = not lock
 
         for i in range(len(self.textBoxObjectMatrix)):
             for j in range(len(self.textBoxObjectMatrix[i])):
@@ -296,6 +305,40 @@ class Matrix(Window):
             self.showAntiDiagonalRect.absoluteShow()
         else:
             self.showAntiDiagonalRect.absoluteHide()
+
+    def setCenter(self, c: bool):
+        self.center = c
+
+        self.calcRealPosition()
+
+        cX = (self.realWidth - (self.bracket2Middle.x - self.bracket1Middle.x)) / 2
+        cY = (self.realHeight - self.bracket1Middle.height) / 2
+
+        if self.center:
+            for obj in self.objects:
+                if obj.matrixCenter == False:
+                    obj.x += cX
+                    obj.y += cY
+
+                    obj.matrixCenter = True
+
+        else:
+            for obj in self.objects:
+                if obj.matrixCenter == True:
+                    obj.x -= cX
+                    obj.y -= cY
+
+                    obj.matrixCenter = False
+
+        self.calcRealPosition()
+
+    def setEinheitsMatrix(self):
+        for i in range(self.m):
+            for j in range(self.n):
+                if i == j:
+                    self.numberMatrix[i][j] = 1
+                else:
+                    self.numberMatrix[i][j] = 0
 
     def render(self):
         if self.numberMatrix is None:

@@ -61,7 +61,7 @@ class MatrizenEinführung(Window):
         add(s2)
 
         add(Text(self.screen,      0, 150 + 30 * 0, 0, 225, 25, "Indizes: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf"))
-        add(CheckBox(self.screen, 375, 150 + 30 * 0, 0,  25, 25, onClick=lambda a, b, c: [self.matrix.setIndizesTextBox(a.value, Color.BLUE1), self.matrix.lockTextBoxObjects(not a.value)]))
+        add(CheckBox(self.screen, 375, 150 + 30 * 0, 0,  25, 25, onClick=lambda a, b, c: [self.matrix.setIndizesTextBox(a.value, Color.BLUE1), self.matrix.lockTextBoxObjects(a.value)]))
 
         add(Text(self.screen,      0, 150 + 30 * 1, 0, 225, 25, "Zeilen: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf"))
         add(CheckBox(self.screen, 375, 150 + 30 * 1, 0,  25, 25, onClick=lambda a, b, c: self.matrix.setShowRow(a.value), colorClicked=Color.RED))

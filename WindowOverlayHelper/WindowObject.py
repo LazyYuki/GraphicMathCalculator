@@ -35,6 +35,8 @@ class WindowObject():
 
         self.ID = ""                   # unique ID for object
 
+        self.matrixCenter = False
+
         # === event ====
         self.draw = True                # if it should be drawn
         self.events = True              # if it should run events
