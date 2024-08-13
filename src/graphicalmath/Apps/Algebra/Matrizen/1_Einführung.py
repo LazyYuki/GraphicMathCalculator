@@ -15,12 +15,12 @@ class MatrizenEinführung(Window):
 
         # === Main Window
 
-        self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Matrix - Einfuehrung", fontSize=70, fontPath="Assets/Fonts/HEADLINE.ttf")
+        self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Matrix - Einfuehrung", fontSize=70, fontPath="assets/fonts/HEADLINE.ttf")
         self.headline.center = True
 
-        self.explanation = MultiLineText(self.screen, 50, 115, 0, self.width - 100, 100, MATRIX_EINFUEHRUNGS_TEXT, fontSize=17, fontPath="Assets/Fonts/Inter.ttf")
+        self.explanation = MultiLineText(self.screen, 50, 115, 0, self.width - 100, 100, MATRIX_EINFUEHRUNGS_TEXT, fontSize=17, fontPath="assets/fonts/Inter.ttf")
 
-        self.tipp = MultiLineText(self.screen, 50, 115 + self.explanation.height + 10, 0, self.width - 100, 100, MATRIX_TIPPS, fontSize=17, fontPath="Assets/Fonts/Inter.ttf")
+        self.tipp = MultiLineText(self.screen, 50, 115 + self.explanation.height + 10, 0, self.width - 100, 100, MATRIX_TIPPS, fontSize=17, fontPath="assets/fonts/Inter.ttf")
 
         self.matrix = Matrix(self.screen, 550, 275, 0, 500, 500)
         self.matrix.changeSize(3, 3)
@@ -35,14 +35,14 @@ class MatrizenEinführung(Window):
         self.addObject(self.interactionWindow)
         add = lambda a: self.interactionWindow.addObject(a)
 
-        tName = Text(self.screen, 0, 0, 0, self.interactionWindow.width, 25, f"Name: Matrix {self.matrix.m} x {self.matrix.n}", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf")
+        tName = Text(self.screen, 0, 0, 0, self.interactionWindow.width, 25, f"Name: Matrix {self.matrix.m} x {self.matrix.n}", fontSize=20, fontPath="assets/fonts/VeraMono.ttf")
         tName.verticalCenter = True
         add(tName)
 
-        t1 = Text(self.screen, 0, 30, 0, 100, 25, "m: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf")
+        t1 = Text(self.screen, 0, 30, 0, 100, 25, "m: ", fontSize=20, fontPath="assets/fonts/VeraMono.ttf")
         t1.verticalCenter = True
         add(t1)
-        t2 = Text(self.screen, 0, 60, 0, 100, 25, "n: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf")
+        t2 = Text(self.screen, 0, 60, 0, 100, 25, "n: ", fontSize=20, fontPath="assets/fonts/VeraMono.ttf")
         t2.verticalCenter = True
         add(t2)
 
@@ -60,19 +60,19 @@ class MatrizenEinführung(Window):
         s2.setMinValue(1)
         add(s2)
 
-        add(Text(self.screen,      0, 150 + 30 * 0, 0, 225, 25, "Indizes: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf"))
+        add(Text(self.screen,      0, 150 + 30 * 0, 0, 225, 25, "Indizes: ", fontSize=20, fontPath="assets/fonts/VeraMono.ttf"))
         add(CheckBox(self.screen, 375, 150 + 30 * 0, 0,  25, 25, onClick=lambda a, b, c: [self.matrix.setIndizesTextBox(a.value, Color.BLUE1), self.matrix.lockTextBoxObjects(a.value)]))
 
-        add(Text(self.screen,      0, 150 + 30 * 1, 0, 225, 25, "Zeilen: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf"))
+        add(Text(self.screen,      0, 150 + 30 * 1, 0, 225, 25, "Zeilen: ", fontSize=20, fontPath="assets/fonts/VeraMono.ttf"))
         add(CheckBox(self.screen, 375, 150 + 30 * 1, 0,  25, 25, onClick=lambda a, b, c: self.matrix.setShowRow(a.value), colorClicked=Color.RED))
 
-        add(Text(self.screen,      0, 150 + 30 * 2, 0, 225, 25, "Spalte: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf"))
+        add(Text(self.screen,      0, 150 + 30 * 2, 0, 225, 25, "Spalte: ", fontSize=20, fontPath="assets/fonts/VeraMono.ttf"))
         add(CheckBox(self.screen, 375, 150 + 30 * 2, 0,  25, 25, onClick=lambda a, b, c: self.matrix.setShowColumn(a.value), colorClicked=Color.GREEN))
 
-        add(Text(self.screen,      0, 150 + 30 * 3, 0, 225, 25, "Hauptdiagonale: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf"))
+        add(Text(self.screen,      0, 150 + 30 * 3, 0, 225, 25, "Hauptdiagonale: ", fontSize=20, fontPath="assets/fonts/VeraMono.ttf"))
         add(CheckBox(self.screen, 375, 150 + 30 * 3, 0,  25, 25, onClick=lambda a, b, c: self.matrix.setShowMainDiagonal(a.value), colorClicked=Color.PURPLE))
 
-        add(Text(self.screen,      0, 150 + 30 * 4, 0, 225, 25, "Gegendiagonale: ", fontSize=20, fontPath="Assets/Fonts/VeraMono.ttf"))
+        add(Text(self.screen,      0, 150 + 30 * 4, 0, 225, 25, "Gegendiagonale: ", fontSize=20, fontPath="assets/fonts/VeraMono.ttf"))
         add(CheckBox(self.screen, 375, 150 + 30 * 4, 0,  25, 25, onClick=lambda a, b, c: self.matrix.setShowAntiDiagonal(a.value), colorClicked=Color.YELLOW))
 
 module = MatrizenEinführung

@@ -1,7 +1,7 @@
 import pygame, copy
 
 from WindowOverlayHelper.Window import Window
-from Application.Color import Color
+from application.color import Color
 from EventManager.EventArgs import *
 from UIElements.AllUIElements import Rect, Text
 
@@ -23,7 +23,7 @@ class TextBoxStyle:
         self.noRect = False
         self.noFill = False
 
-        self.fontPath = "Assets/Fonts/Inter.ttf"
+        self.fontPath = "assets/fonts/Inter.ttf"
         self.fontSize = 20
 
         self.text = "TextBox"

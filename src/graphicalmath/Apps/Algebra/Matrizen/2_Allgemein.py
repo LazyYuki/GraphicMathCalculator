@@ -12,7 +12,7 @@ class MatrizenAllgemein(Window):
 
         # === Main Window
 
-        self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Matrix - Einfuehrung", fontSize=70, fontPath="Assets/Fonts/HEADLINE.ttf")
+        self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Matrix - Einfuehrung", fontSize=70, fontPath="assets/fonts/HEADLINE.ttf")
         self.headline.center = True
         self.addObject(self.headline)
 
@@ -27,7 +27,7 @@ class MatrizenAllgemein(Window):
         p = lambda x: self.transponieren.addObject(x)
 
         # === Overall
-        t = Text(self.screen, 0, 0, 0, self.overall.width / 3, 50, "Zeilenvektor (m = 1)", fontSize=25, fontPath="Assets/Fonts/Inter.ttf", center=True)
+        t = Text(self.screen, 0, 0, 0, self.overall.width / 3, 50, "Zeilenvektor (m = 1)", fontSize=25, fontPath="assets/fonts/Inter.ttf", center=True)
         t.font.bold = True
         o(t)
         self.zeilenVektor = Matrix(self.screen, 0, 50, 0, self.overall.width / 3, self.overall.height - 50)
@@ -35,7 +35,7 @@ class MatrizenAllgemein(Window):
         self.zeilenVektor.setCenter(True)
         o(self.zeilenVektor)
 
-        t = Text(self.screen, self.zeilenVektor.width, 0, 0, self.overall.width / 3, 50, "Spaltenvektor (n = 1)", fontSize=25, fontPath="Assets/Fonts/Inter.ttf", center=True)
+        t = Text(self.screen, self.zeilenVektor.width, 0, 0, self.overall.width / 3, 50, "Spaltenvektor (n = 1)", fontSize=25, fontPath="assets/fonts/Inter.ttf", center=True)
         t.font.bold = True
         o(t)
         self.spaltenVektor = Matrix(self.screen, self.zeilenVektor.width, 50, 0, self.overall.width / 3, self.overall.height - 50)
@@ -43,7 +43,7 @@ class MatrizenAllgemein(Window):
         self.spaltenVektor.setCenter(True)
         o(self.spaltenVektor)
 
-        t = Text(self.screen, self.spaltenVektor.width * 2, 0, 0, self.overall.width / 3, 50, "quadratische Matrix (m = n)", fontSize=25, fontPath="Assets/Fonts/Inter.ttf", center=True)
+        t = Text(self.screen, self.spaltenVektor.width * 2, 0, 0, self.overall.width / 3, 50, "quadratische Matrix (m = n)", fontSize=25, fontPath="assets/fonts/Inter.ttf", center=True)
         t.font.bold = True
         o(t)
         self.quadratischeMatrix = Matrix(self.screen, self.spaltenVektor.width * 2, 50, 0, self.overall.width / 3, self.overall.height - 50)
@@ -57,7 +57,7 @@ class MatrizenAllgemein(Window):
         
         # === Transponieren
 
-        t = Text(self.screen, 0, 0, 0, 200, 50, "Transponieren", fontSize=25, fontPath="Assets/Fonts/Inter.ttf")
+        t = Text(self.screen, 0, 0, 0, 200, 50, "Transponieren", fontSize=25, fontPath="assets/fonts/Inter.ttf")
         t.font.bold = True
         p(t)
 
@@ -65,16 +65,16 @@ class MatrizenAllgemein(Window):
         self.inpMatrix.changeSize(1, 1)
         p(self.inpMatrix)
         self.inpMatrix.setCenter(True)
-        p(Text(self.screen, self.inpMatrix.x, 40, 0, self.inpMatrix.width, 25, "Input", fontSize=19, fontPath="Assets/Fonts/VeraMono.ttf", center=True))
+        p(Text(self.screen, self.inpMatrix.x, 40, 0, self.inpMatrix.width, 25, "Input", fontSize=19, fontPath="assets/fonts/VeraMono.ttf", center=True))
 
         self.outMatrix = Matrix(self.screen, self.inpMatrix.width + self.inpMatrix.x, 65, 0, self.transponieren.width / 3, self.transponieren.height - 50)
         self.outMatrix.changeSize(3, 3)
         p(self.outMatrix)
         self.outMatrix.setCenter(True)
         self.outMatrix.lockTextBoxObjects(True)
-        p(Text(self.screen, self.outMatrix.x, 40, 0, self.outMatrix.width, 25, "Output", fontSize=19, fontPath="Assets/Fonts/VeraMono.ttf", center=True))
+        p(Text(self.screen, self.outMatrix.x, 40, 0, self.outMatrix.width, 25, "Output", fontSize=19, fontPath="assets/fonts/VeraMono.ttf", center=True))
 
-        t1 = Text(self.screen, t.width,         0, 0, 40, 25, "m: 3", fontSize=17, fontPath="Assets/Fonts/VeraMono.ttf")
+        t1 = Text(self.screen, t.width,         0, 0, 40, 25, "m: 3", fontSize=17, fontPath="assets/fonts/VeraMono.ttf")
         s1 = Slider(self.screen, t.width + 40,  0, 0, 125, 19, onValueChange=lambda a, b: 
                    [self.inpMatrix.changeSize(m = int(a.value)), self.outMatrix.changeSize(n = int(a.value)), t1.setText("m: " + str(int(a.value)))],
                    onValueChangeArgs=self.inpMatrix)
@@ -82,7 +82,7 @@ class MatrizenAllgemein(Window):
         s1.setMinValue(1)
         p(s1)
         p(t1)
-        t2 = Text(self.screen, t.width,         25, 0, 40, 25, "n: 3", fontSize=17, fontPath="Assets/Fonts/VeraMono.ttf")
+        t2 = Text(self.screen, t.width,         25, 0, 40, 25, "n: 3", fontSize=17, fontPath="assets/fonts/VeraMono.ttf")
         s2 = Slider(self.screen, t.width + 40,  25, 0, 125, 19, onValueChange=lambda a, b: 
                    [self.inpMatrix.changeSize(n = int(a.value)), self.outMatrix.changeSize(m = int(a.value)), t2.setText("n: " + str(int(a.value)))],
                    onValueChangeArgs=self.inpMatrix)

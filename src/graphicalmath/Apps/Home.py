@@ -14,19 +14,19 @@ class Home(Window):
         # w: 1110, h: 800
 
         self.dirStruct = {}
-        self.loadDirectoryStructure("Apps", self.dirStruct)
+        self.loadDirectoryStructure("src/graphicalmath/Apps", self.dirStruct)
 
         newLines = []
-        with open("Apps/Status.txt", "r", encoding="utf-8") as f:
+        with open("src/graphicalmath/Apps/Status.txt", "r", encoding="utf-8") as f:
             txtLines = f.readlines()
             newLines = self.loadStatusTxt(txtLines, self.dirStruct)[0]
 
-        with open("Apps/Status.txt", "w", encoding="utf-8") as f:
+        with open("src/graphicalmath/Apps/Status.txt", "w", encoding="utf-8") as f:
             f.writelines(newLines)
 
         # === Main Window
 
-        self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Home", fontSize=70, fontPath="Assets/Fonts/HEADLINE.ttf")
+        self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Home", fontSize=70, fontPath="assets/fonts/HEADLINE.ttf")
         self.headline.center = True
         self.addObject(self.headline)
 
@@ -40,7 +40,7 @@ class Home(Window):
         w1 = Window(self.screen, 0, 0, 0, sizeW - self.margin, sizeH - self.margin)
         w1.addObject(Rect(self.screen, 0, 0, 0, w1.width, w1.height, color=Color.BLUE1, borderRadius=30, borderWidth=5))
 
-        w1t1 = Text(self.screen, 0, 0, 0, w1.width, 50, "Einführung", fontSize=30, fontPath="Assets/Fonts/Inter.ttf")
+        w1t1 = Text(self.screen, 0, 0, 0, w1.width, 50, "Einführung", fontSize=30, fontPath="assets/fonts/Inter.ttf")
         w1t1.center = True
         w1t1.font.bold = True
         w1.addObject(w1t1)
@@ -50,13 +50,13 @@ class Home(Window):
         w1.addObject(w1t2)
         w1.addObject(w1t3)
 
-        w1.addObject(Image(self.screen, 20 + w1.width / 3 * 0,  w1t3.height + w1t3.y + 20, 0, 25, 25, "Assets/Images/Check.png"))
+        w1.addObject(Image(self.screen, 20 + w1.width / 3 * 0,  w1t3.height + w1t3.y + 20, 0, 25, 25, "assets/images/Check.png"))
         w1.addObject(Text(self.screen,  50 + w1.width / 3 * 0,  w1t3.height + w1t3.y + 20, 0, 100, 25, "- Fertig", fontSize=17, verticalCenter=True))
         
-        w1.addObject(Image(self.screen, 25 + w1.width / 4 * 1,  w1t3.height + w1t3.y + 20, 0, 25, 25, "Assets/Images/Cross.png"))
+        w1.addObject(Image(self.screen, 25 + w1.width / 4 * 1,  w1t3.height + w1t3.y + 20, 0, 25, 25, "assets/images/Cross.png"))
         w1.addObject(Text(self.screen,  55 + w1.width / 4 * 1,  w1t3.height + w1t3.y + 20, 0, 200, 25, "- Nicht funktional", fontSize=17, verticalCenter=True))
 
-        w1.addObject(Image(self.screen, 20 + w1.width / 3 * 2,  w1t3.height + w1t3.y + 20, 0, 25, 25, "Assets/Images/Exclamation.png"))
+        w1.addObject(Image(self.screen, 20 + w1.width / 3 * 2,  w1t3.height + w1t3.y + 20, 0, 25, 25, "assets/images/Exclamation.png"))
         w1.addObject(Text(self.screen,  50 + w1.width / 3 * 2,  w1t3.height + w1t3.y + 20, 0, 100, 25, "- In Arbeit", fontSize=17, verticalCenter=True))
 
         # == w2 - Algebra ==
@@ -64,7 +64,7 @@ class Home(Window):
         w2 = Window(self.screen, sizeW + self.margin, 0, 0, sizeW - self.margin, sizeH - self.margin)
         w2.addObject(Rect(self.screen, 0, 0, 0, w2.width, w2.height, color=Color.BLUE1, borderRadius=25, borderWidth=5))
 
-        w2t1 = Text(self.screen, 0, 0, 1, w2.width, 50, "Algebra", fontSize=30, fontPath="Assets/Fonts/Inter.ttf", center=True)
+        w2t1 = Text(self.screen, 0, 0, 1, w2.width, 50, "Algebra", fontSize=30, fontPath="assets/fonts/Inter.ttf", center=True)
         w2t1.font.bold = True
         w2.addObject(Rect(self.screen, 0, 0, 1, w2.width, 50, Color.BLACK))
         w2.addObject(w2t1)
@@ -85,7 +85,7 @@ class Home(Window):
         w3 = Window(self.screen, 0, sizeH + self.margin, 0, sizeW - self.margin, sizeH - self.margin)
         w3.addObject(Rect(self.screen, 0, 0, 0, w3.width, w3.height, color=Color.BLUE1, borderRadius=25, borderWidth=5))
 
-        w3t1 = Text(self.screen, 0, 0, 1, w3.width, 50, "Analysis", fontSize=30, fontPath="Assets/Fonts/Inter.ttf", center=True)
+        w3t1 = Text(self.screen, 0, 0, 1, w3.width, 50, "Analysis", fontSize=30, fontPath="assets/fonts/Inter.ttf", center=True)
         w3t1.font.bold = True
         w3.addObject(Rect(self.screen, 0, 0, 1, w3.width, 50, Color.BLACK))
         w3.addObject(w3t1)
@@ -105,7 +105,7 @@ class Home(Window):
         w4 = Window(self.screen, sizeW + self.margin, sizeH + self.margin, 0, sizeW - self.margin, sizeH - self.margin)
         w4.addObject(Rect(self.screen, 0, 0, 0, w4.width, w4.height, color=Color.BLUE1, borderRadius=25, borderWidth=5))
 
-        w4t1 = Text(self.screen, 0, 0, 1, w4.width, 50, "Stochastik", fontSize=30, fontPath="Assets/Fonts/Inter.ttf", center=True)
+        w4t1 = Text(self.screen, 0, 0, 1, w4.width, 50, "Stochastik", fontSize=30, fontPath="assets/fonts/Inter.ttf", center=True)
         w4t1.font.bold = True
         w4.addObject(Rect(self.screen, 0, 0, 1, w4.width, 50, Color.BLACK))
         w4.addObject(w4t1)
@@ -147,7 +147,11 @@ class Home(Window):
             name2, status2 = dir["Apps"][i]
 
             if i < len(txtLines):
-                name1, status1 = txtLines[i].replace("\n", "").split("=")
+                parts = txtLines[i].replace("\n", "").split("=")
+                if len(parts) < 2:
+                    continue
+
+                name1, status1 = parts
                 
                 index = i + 1
 
@@ -191,11 +195,11 @@ class Home(Window):
             p = ""
             match status:
                 case 0:
-                    p = "Assets/Images/Cross.png"
+                    p = "assets/images/Cross.png"
                 case 1:
-                    p = "Assets/Images/Exclamation.png"
+                    p = "assets/images/Exclamation.png"
                 case 2:
-                    p = "Assets/Images/Check.png"
+                    p = "assets/images/Check.png"
 
             i = Image(self.screen, indent, subWindow.helperVarwindow, 0, self.windowSubWindowFileHeight, self.windowSubWindowFileHeight, p)
             

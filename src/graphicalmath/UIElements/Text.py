@@ -5,7 +5,7 @@ from WindowOverlayHelper.Window import Window
 from EventManager.EventArgs import MouseEventArgs, KeyboardEventArgs
 
 class Text(WindowObject):
-    def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, text="", color = (255, 255, 255), fontPath="Assets\\Fonts\\Inter.ttf", fontSize = 20, center = False, verticalCenter = False) -> None:
+    def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, text="", color = (255, 255, 255), fontPath="assets\\fonts\\Inter.ttf", fontSize = 20, center = False, verticalCenter = False) -> None:
         super().__init__(screen, x, y, z, width, height)
 
         self.color = color
@@ -56,7 +56,7 @@ class Text(WindowObject):
             self.screen.blit(r, (self.realX + self.indent, self.realY))
 
 class MultiLineText(Window):
-    def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, text = "", color = (255, 255, 255), fontPath="Assets\\Fonts\\Inter.ttf", fontSize = 20):
+    def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, text = "", color = (255, 255, 255), fontPath="assets\\fonts\\Inter.ttf", fontSize = 20):
         super().__init__(screen, x, y, z, width, height)
 
         self.color = color
