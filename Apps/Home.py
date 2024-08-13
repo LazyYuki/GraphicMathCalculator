@@ -24,9 +24,6 @@ class Home(Window):
         with open("Apps/Status.txt", "w", encoding="utf-8") as f:
             f.writelines(newLines)
 
-        print(newLines)
-        # print(self.dirStruct)
-
         # === Main Window
 
         self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Home", fontSize=70, fontPath="Assets/Fonts/HEADLINE.ttf")
