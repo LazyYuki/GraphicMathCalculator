@@ -10,11 +10,5 @@ Home.py=0
 
 
 
-Ableitung.py=1
 
-test1.py=0
-
-
-
-test2.py=0
 

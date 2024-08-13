@@ -1,4 +1,10 @@
-class Color:
+from enum import Enum
+
+# in order to make this an actual enum we'd need to also get enum members
+# using Color.RED.value for instance, but I don't have Lust gerade das zu ändern
+# class Color(Enum):
+
+class Color():
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)

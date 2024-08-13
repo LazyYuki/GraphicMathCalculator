@@ -4,7 +4,7 @@ from WindowOverlayHelper.WindowObject import WindowObject
 from WindowOverlayHelper.Window import Window
 from UIElements.AllUIElements import Text, Rect, Button, ButtonImage, ButtonStyles
 from EventManager.EventArgs import MouseEventArgs, KeyboardEventArgs
-from Application.Color import *
+from application.color import *
 
 class Sidebar(Window):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, 
@@ -42,15 +42,15 @@ class Sidebar(Window):
 
         self.algebraWindow = Window(screen, 5, self.closedSidebarWidth + 32, 0, mainNavigationWidth - 10, height)
         self.algebraWindow.addObject(Text(screen, 0, 0, 0, mainNavigationWidth, 40, "Algebra", fontSize=30))
-        self.mainNavigaionAddDirectoryStructure("Apps/Algebra", self.algebraWindow, 1)
+        self.mainNavigaionAddDirectoryStructure("src/graphicalmath/Apps/Algebra", self.algebraWindow, 1)
 
         self.analysisWindow = Window(screen, 5, self.closedSidebarWidth + 32, 0, mainNavigationWidth - 10, height)
         self.analysisWindow.addObject(Text(screen, 0, 0, 0, mainNavigationWidth, 40, "Analysis", fontSize=30))
-        self.mainNavigaionAddDirectoryStructure("Apps/Analysis", self.analysisWindow, 1)
+        self.mainNavigaionAddDirectoryStructure("src/graphicalmath/Apps/Analysis", self.analysisWindow, 1)
 
         self.stochastikWindow = Window(screen, 5, self.closedSidebarWidth + 32, 0, mainNavigationWidth - 10, height)
         self.stochastikWindow.addObject(Text(screen, 0, 0, 0, mainNavigationWidth, 40, "Stochastik", fontSize=30))
-        self.mainNavigaionAddDirectoryStructure("Apps/Stochastik", self.stochastikWindow, 1)
+        self.mainNavigaionAddDirectoryStructure("src/graphicalmath/Apps/Stochastik", self.stochastikWindow, 1)
 
         self.mainNavigation.addObject(self.algebraWindow)
         self.mainNavigation.addObject(self.analysisWindow)
@@ -68,7 +68,7 @@ class Sidebar(Window):
         self.quickbarRect = Rect(screen, 0, 0, 0, self.closedSidebarWidth, height, Color.BLUE1)
         self.quickbar.addObject(self.quickbarRect)
 
-        mainButton = ButtonImage(self.screen, 0, 0, 0, self.closedSidebarWidth, self.closedSidebarWidth, "Assets/Images/MathIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
+        mainButton = ButtonImage(self.screen, 0, 0, 0, self.closedSidebarWidth, self.closedSidebarWidth, "assets/images/MathIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
                                  onClick=(lambda b, x, y: [self.close(), self.loadSubWindow("Apps/Home.py")]), onClickArg=self)
         mainButton.buttonStyle.noRect = True
         mainButton.buttonStyle.imageSize = (45, 45)
@@ -79,15 +79,15 @@ class Sidebar(Window):
 
         b1 = ButtonImage(self.screen, 0, 1 * (self.closedSidebarWidth + 10) + 50, 0, 
                                             self.closedSidebarWidth, self.closedSidebarWidth, 
-                                            "Assets/Images/AlgebraIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
+                                            "assets/images/AlgebraIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
                                             onClick=(lambda b, x, y: x.quickbarButtonShow(0, b1)), onClickArg=self)
         b2 = ButtonImage(self.screen, 0, 2 * (self.closedSidebarWidth + 10) + 50, 0, 
                                             self.closedSidebarWidth, self.closedSidebarWidth, 
-                                            "Assets/Images/AnalysisIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
+                                            "assets/images/AnalysisIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
                                             onClick=(lambda b, x, y: x.quickbarButtonShow(1, b2)), onClickArg=self)
         b3 = ButtonImage(self.screen, 0, 3 * (self.closedSidebarWidth + 10) + 50, 0, 
                                             self.closedSidebarWidth, self.closedSidebarWidth, 
-                                            "Assets/Images/StochasticIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
+                                            "assets/images/StochasticIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar,
                                             onClick=(lambda b, x, y: x.quickbarButtonShow(2, b3)), onClickArg=self)
         
         self.quickbarButtons = [b1, b2, b3]
@@ -95,7 +95,7 @@ class Sidebar(Window):
         for b in self.quickbarButtons:
             self.quickbar.addObject(b)
 
-        self.quickbar.addObject(ButtonImage(self.screen, 0, height - self.closedSidebarWidth * 1.5, 0, self.closedSidebarWidth, self.closedSidebarWidth, "Assets/Images/SettingsIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar))
+        self.quickbar.addObject(ButtonImage(self.screen, 0, height - self.closedSidebarWidth * 1.5, 0, self.closedSidebarWidth, self.closedSidebarWidth, "assets/images/SettingsIcon.png", buttonStyle=ButtonStyles.sidebarQuickbar))
 
         self.quickbarButtonShow(0, b1)
 
@@ -169,7 +169,8 @@ class Sidebar(Window):
         if activeWindow != None:
             activeWindow.absoluteShow()
         else:
-            mod = importlib.import_module(path.replace("/", ".").replace("\\", ".").replace(".py", ""))
+            # fix this shit hardcode plsss
+            mod = importlib.import_module(path.replace('src/graphicalmath/', '').replace("/", ".").replace("\\", ".").replace(".py", ""))
 
             if hasattr(mod, "module") and mod.module != None:
                 m = mod.module(self.screen, 0, 0, 0, self.container.width, self.container.height)

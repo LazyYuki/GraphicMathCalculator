@@ -3,7 +3,7 @@ import pygame, copy
 from WindowOverlayHelper.Window import Window
 from UIElements.Text import Text
 from UIElements.Rect import Rect
-from Application.Color import Color
+from application.color import Color
 from EventManager.EventArgs import MouseEventArgs, KeyboardEventArgs
 
 class ButtonStyle:
@@ -21,7 +21,7 @@ class ButtonStyle:
         self.noRect = False
         self.noFill = False
 
-        self.fontPath = "Assets/Fonts/Inter.ttf"
+        self.fontPath = "assets/fonts/Inter.ttf"
         self.fontSize = 20
 
         self.text = "Button"
