@@ -79,6 +79,14 @@ class Button(Window):
 
         self.active = False
 
+    def setSizeFactor(self, newSizeFactor):
+        if super().setSizeFactor(newSizeFactor):
+            return True
+
+        t = self.text.text
+        self.changeStyle(self.buttonStyle)
+        self.text.setText(t)
+
     def changeStyle(self, buttonStyle: ButtonStyle, text = None):
         self.buttonStyle = copy.deepcopy(buttonStyle)
 
@@ -90,7 +98,7 @@ class Button(Window):
         if text != None:
             self.buttonStyle.text = text
 
-        self.text = Text(self.screen, 0, 0, 0, self.width, self.height, self.buttonStyle.text, self.buttonStyle.textColor, self.buttonStyle.fontPath, self.buttonStyle.fontSize)
+        self.text = Text(self.screen, 0, 0, 0, self.width, self.height, self.buttonStyle.text, self.buttonStyle.textColor, self.buttonStyle.fontPath, self.buttonStyle.fontSize * self.sizeFactor)
         self.text.center = self.buttonStyle.center
         self.text.verticalCenter = self.buttonStyle.verticalCenter
         
@@ -140,12 +148,11 @@ class ButtonImage(Button):
         
         super().__init__(screen, x, y, z, width, height, buttonStyle, onClick, onClickArg)
 
-
     def changeStyle(self, buttonStyle: ButtonStyle, text=None):
         super().changeStyle(buttonStyle)
 
         self.image = pygame.image.load(self.imagePath)
-        self.image = pygame.transform.smoothscale(self.image, self.buttonStyle.imageSize)
+        self.image = pygame.transform.smoothscale(self.image, (self.buttonStyle.imageSize[0] * self.sizeFactor, self.buttonStyle.imageSize[1] * self.sizeFactor))
 
         self.centerCoords = (self.width // 2, self.height // 2)
 

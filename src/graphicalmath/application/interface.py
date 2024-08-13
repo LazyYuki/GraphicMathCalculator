@@ -36,6 +36,9 @@ class Application:
         return True
 
     def _executionLoop(self: Self) -> bool:
+        oldSizeFactor = 1
+        sizeFactor = 0.75
+
         while True:
             deltaTime = self._clock.tick(self.settings.targetFps)
 
@@ -76,6 +79,11 @@ class Application:
             self._mainWindow.calcRealPosition()
             self._mainWindow.update(deltaTime)
             
+            # if oldSizeFactor != sizeFactor:
+            oldSizeFactor = sizeFactor
+
+            self._mainWindow.setSizeFactor(sizeFactor)
+            self._mainWindow.calcRealPosition()
 
             # -- Render Component --
             self._mainWindow.render()

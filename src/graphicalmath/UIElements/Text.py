@@ -17,7 +17,9 @@ class Text(WindowObject):
 
         # self.font = pygame.font.SysFont("monospace", self.height)
         # self.font = pygame.font.Font(os.getcwd() + "\\" + fontPath.replace("/", "\\"), fontSize)
-        self.font = pygame.font.Font(os.getcwd() + "/" + fontPath.replace("\\", "/"), fontSize)
+        self.fontPath = fontPath
+        self.fontSize = fontSize
+        self.font = pygame.font.Font(os.getcwd() + "/" + fontPath.replace("\\", "/"), int(fontSize))
 
         self.center = center
         self.verticalCenter = verticalCenter
@@ -25,6 +27,15 @@ class Text(WindowObject):
         self.indent = 0
 
         self.clampTextToWidth()
+
+    def setSizeFactor(self, newSizeFactor) -> bool:
+        if super().setSizeFactor(newSizeFactor):
+            return True
+
+        self.indent *= self.sizeFactor
+        self.fontSize *= self.sizeFactor
+
+        self.font = pygame.font.Font(os.getcwd() + "/" + self.fontPath.replace("\\", "/"), int(self.fontSize))
 
     def setText(self, text):
         self.text = text
@@ -75,12 +86,22 @@ class MultiLineText(Window):
         self.center = False
         self.verticalCenter = False
 
+        self.text = text
         self.setTextLines(text)
+
+    def setSizeFactor(self, newSizeFactor):
+        if super().setSizeFactor(newSizeFactor):
+            return True
+
+        self.textMargin *= self.sizeFactor
+
+        self.setTextLines(self.text)
 
     def setTextLines(self, text: str):
         for obj in self.objects:
             self.removeObject(obj)
 
+        self.text = text
         self.textLines = text.split("\n")
         self.textToObj()
 

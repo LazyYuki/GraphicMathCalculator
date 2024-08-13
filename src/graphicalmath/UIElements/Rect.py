@@ -11,6 +11,12 @@ class Rect(WindowObject):
         self.borderWidth = borderWidth
         self.changeBorderRadius(borderRadius)
 
+    def setSizeFactor(self, newSizeFactor):
+        if super().setSizeFactor(newSizeFactor):
+            return True
+
+        self.borderWidth *= self.sizeFactor
+
     def changeBorderRadius(self, br: int):
         self.br_tr = br
         self.br_br = br
@@ -18,7 +24,7 @@ class Rect(WindowObject):
         self.br_bl = br
 
     def render(self):
-        pygame.draw.rect(self.screen, self.color, self.getRealRect(), self.borderWidth, 
+        pygame.draw.rect(self.screen, self.color, self.getRealRect(), int(self.borderWidth), 
                          border_top_left_radius=self.br_tl, border_top_right_radius=self.br_tr, 
                          border_bottom_left_radius=self.br_bl, border_bottom_right_radius=self.br_br) 
 
@@ -34,6 +40,13 @@ class RotatableRect(WindowObject):
         self.center = None
 
         self.setSize(width, height)
+
+    def setSizeFactor(self, newSizeFactor):
+        if super().setSizeFactor(newSizeFactor):
+            return True
+
+        self.borderWidth *= self.sizeFactor
+        self.setSize(self.width, self.height)
 
     def setSize(self, width: int, height: int):
         self.width = width

@@ -78,6 +78,14 @@ class TextBox(Window):
         self.onEnter = None
         self.onEnterArgs = None
 
+    def setSizeFactor(self, newSizeFactor):
+        if super().setSizeFactor(newSizeFactor):
+            return True
+
+        t = self.text.text
+        self.changeStyle(self.textBoxStyle)
+        self.setText(t)
+
     def changeStyle(self, textBoxStyle: TextBoxStyle, text = None):
         self.textBoxStyle = copy.deepcopy(textBoxStyle)
 

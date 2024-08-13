@@ -101,6 +101,16 @@ class Matrix(Window):
 
         self.calcShowRectPos()
 
+    def setSizeFactor(self, newSizeFactor):
+        if super().setSizeFactor(newSizeFactor):
+            return True
+
+        self.cellSize *= newSizeFactor
+        self.outerPadding *= newSizeFactor
+        self.innerPadding *= newSizeFactor
+
+        self.changeSize(self.m, self.n)
+
     def calcShowRectPos(self):
         generaleSize = self.cellSize + self.outerPadding
 

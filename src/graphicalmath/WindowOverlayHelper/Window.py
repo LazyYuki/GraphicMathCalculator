@@ -32,6 +32,23 @@ class Window(WindowObject):
         # set event manager
         self.eventManager = EventManager(self)
         
+    def setSizeFactor(self, newSizeFactor):
+        """
+        Window.setSize:
+        - sets new size for object
+
+        float newSizeFactor: new size factor
+
+        return None
+        """
+
+        if super().setSizeFactor(newSizeFactor):
+            return True
+
+        # calc for every sub object too
+        for obj in self.objects:
+            obj.setSizeFactor(newSizeFactor)
+
     def addObject(self, obj: WindowObject) -> bool:
         """
         Window.addObject:

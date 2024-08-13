@@ -35,6 +35,10 @@ class WindowObject():
 
         self.ID = ""                   # unique ID for object
 
+        self.sizeFactor = 1            # size factor
+
+        # === special properties ===
+
         self.matrixCenter = False
 
         # === event ====
@@ -48,6 +52,26 @@ class WindowObject():
 
         self.lockShow = False           # show() wont change self.draw
         self.lockHide = False           # hide() wont change self.draw
+
+    def setSizeFactor(self, newSizeFactor):
+        """
+        WindowObject.setSize:
+        - sets new size for object
+
+        int newSize: new size for object
+
+        return None
+        """
+
+        if self.sizeFactor == newSizeFactor:
+            return True
+
+        self.sizeFactor = newSizeFactor
+
+        self.x *= self.sizeFactor
+        self.y *= self.sizeFactor
+        self.width  *= self.sizeFactor
+        self.height *= self.sizeFactor
 
     def calcRealPosition(self):
         """
