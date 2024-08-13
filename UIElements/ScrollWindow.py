@@ -14,10 +14,10 @@ class ScrollWindow(Window):
         self.minScroll = 0
         self.maxScroll = 100
 
-    def mouseScrollUp(self, args: MouseEventArgs):
-        if self.currentScroll - self.scrollSpeed < self.minScroll:            
+    def mouseScrollDown(self, args: MouseEventArgs):
+        if self.currentScroll - self.scrollSpeed < self.minScroll:
             for obj in self.objects:
-                obj.y -= self.currentScroll
+                obj.y += self.minScroll - self.currentScroll
 
             self.currentScroll = self.minScroll
 
@@ -27,7 +27,7 @@ class ScrollWindow(Window):
             for obj in self.objects:
                 obj.y -= self.scrollSpeed
 
-    def mouseScrollDown(self, args: MouseEventArgs):
+    def mouseScrollUp(self, args: MouseEventArgs):
         if self.currentScroll + self.scrollSpeed > self.maxScroll:
             for obj in self.objects:
                 obj.y += self.maxScroll - self.currentScroll
@@ -45,7 +45,7 @@ class ScrollWindow(Window):
 
         obj: WindowObject
         for obj in self.objects:
-            if obj.realY + obj.realHeight > 0 and obj.realY < self.realHeight:
+            if obj.y >= 0 and obj.y + obj.height <= self.realHeight:
                 obj.absoluteShow()
             else:
                 obj.absoluteHide()
