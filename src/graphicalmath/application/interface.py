@@ -21,7 +21,7 @@ class Application:
         pygame.init()
 
         self._screen = pygame.display.set_mode((self.settings.width, self.settings.height))
-        pygame.display.set_caption(f"{self.settings.title} | 0.1.3-beta")
+        pygame.display.set_caption(f"{self.settings.title} | 0.1.4-beta")
 
         self._clock = pygame.time.Clock()
 
@@ -37,7 +37,7 @@ class Application:
 
     def _executionLoop(self: Self) -> bool:
         while True:
-            deltaTime = self._clock.tick(self.settings.targetFps)
+            deltaTime = self._clock.tick(self.settings.targetFps) / 1000
 
             # TODO: more differentation between each component: InputComponent, UpdateComponent, RenderComponent, etc.
             # -- Input Component --

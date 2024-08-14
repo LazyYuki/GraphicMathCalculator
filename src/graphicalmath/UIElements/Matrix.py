@@ -36,6 +36,96 @@ def textBoxOnEnter(self: TextBox, args):
 
     self.parent.numberMatrix[self.i][self.j] = int(self.getText())
 
+    if self.parent.animation != None:
+        self.parent.animation.reCalcFrames()
+
+class MatrixAnimation(WindowObject):
+    def __init__(self) -> types.NoneType:
+        super().__init__(0, 0, 0, 0, 0, 0)
+
+        self.currentFrame = 0
+        self.currentFramedt = 0
+        self.totalFrames = 0
+        self.lastFrame = 0
+
+        self.animationSpeed = 1 # animationFrames per sec
+
+        self.frames = []
+
+        self.run = False
+
+        self.frameSlider = None
+
+    def __del__(self):
+        pass
+
+    def setFrameSlider(self, slider: Slider):
+        self.frameSlider = slider
+
+        self.frameSlider.setMinValue(0)
+        self.frameSlider.setMaxValue(self.lastFrame)
+
+    def setSpeed(self, speed: int):
+        self.animationSpeed = speed
+
+    def start(self):
+        self.run = True
+
+        if self.currentFrame == self.lastFrame:
+            self.currentFrame = 0
+            self.currentFramedt = 0
+
+            if self.frameSlider != None:
+                self.frameSlider.setValue(self.currentFramedt)
+            else:
+                self.setFrame(self.currentFramedt)
+
+    def stop(self):
+        self.run = False
+
+    def setCurrentFramedt(self, frame: int):
+        self.currentFramedt = frame
+        self.currentFrame = math.floor(self.currentFramedt)
+
+    def update(self, dt: float):
+        super().update(dt)
+
+        if self.run:
+            self.currentFramedt += self.animationSpeed * dt
+
+            if math.floor(self.currentFramedt) == self.currentFrame:
+                return
+            
+            self.currentFramedt = math.floor(self.currentFramedt)
+
+            if self.currentFramedt >= self.lastFrame:
+                self.currentFramedt = self.lastFrame
+                self.run = False
+
+            if self.frameSlider != None:
+                self.frameSlider.setValue(self.currentFramedt)
+            else:
+                self.setFrame(self.currentFramedt)
+
+    def reCalcFrames(self):
+        """
+        re calculate the frames
+        """
+
+        if self.frameSlider != None:
+            self.frameSlider.setMinValue(0)
+            self.frameSlider.setMaxValue(self.lastFrame)
+            if self.frameSlider.onValueChange != None:
+                self.frameSlider.onValueChange(self.frameSlider, self.frameSlider.onValueChangeArgs)
+
+
+    def setFrame(self, frame: int):
+        """
+        set Matrix in correlation to the current Frame
+        """
+
+        self.currentFrame = frame
+
 class Matrix(Window):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
         super().__init__(screen, x, y, z, width, height)
@@ -95,11 +185,17 @@ class Matrix(Window):
             self.addObject(show)
             show.absoluteHide()
 
-        # ==
+        self.transponiert = False
+
+        # == Center
 
         self.center = False
 
         self.calcShowRectPos()
+
+        # == Animation
+        self.animation: MatrixAnimation
+        self.animation = None
 
     def calcShowRectPos(self):
         generaleSize = self.cellSize + self.outerPadding
@@ -214,6 +310,10 @@ class Matrix(Window):
         self.setCenter(self.center)
         self.calcRealPosition()
 
+        if self.animation != None:
+            self.animation.reCalcFrames()
+            self.animation.setFrame(0)
+
     def createTextBoxObjects(self):
         for i in range(len(self.textBoxObjectMatrix)):
             for j in range(len(self.textBoxObjectMatrix[i])):
@@ -271,8 +371,22 @@ class Matrix(Window):
 
         for i in range(len(self.textBoxObjectMatrix)):
             for j in range(len(self.textBoxObjectMatrix[i])):
-                self.textBoxObjectMatrix[i][j].setText(str(i + 1) + str(j + 1) if self.showIndizes else str(self.numberMatrix[i][j]))
+                if self.transponiert:
+                    self.textBoxObjectMatrix[i][j].setText(str(j + 1) + str(i + 1) if self.showIndizes else str(self.numberMatrix[i][j]))
+                else:
+                    self.textBoxObjectMatrix[i][j].setText(str(i + 1) + str(j + 1) if self.showIndizes else str(self.numberMatrix[i][j]))
                 self.textBoxObjectMatrix[i][j].text.color = color if self.showIndizes else self.textBoxStyle.textColor
+
+    def setNumberMatrix(self):
+        if len(self.numberMatrix) != self.m or len(self.numberMatrix[0]) != self.n:
+            return
+        
+        if self.showIndizes:
+            return 
+
+        for i in range(len(self.textBoxObjectMatrix)):
+            for j in range(len(self.textBoxObjectMatrix[i])):
+                self.textBoxObjectMatrix[i][j].setText(str(self.numberMatrix[i][j]))
 
     def setShowMainDiagonal(self, v):
         self.showMainDiagonal = v
@@ -340,6 +454,14 @@ class Matrix(Window):
                 else:
                     self.numberMatrix[i][j] = 0
 
+    def setPointerToIndex(self, pointer: Rect, x, y):
+        pointer.x = self.outerPadding + (self.cellSize + self.innerPadding) * x + self.cellSize / 2 - pointer.width / 2
+        pointer.y = self.outerPadding + (self.cellSize + self.innerPadding) * y + self.cellSize / 2 - pointer.height / 2
+        pointer.matrixCenter = False
+
+        self.setCenter(self.center)
+        self.calcRealPosition()
+
     def render(self):
         if self.numberMatrix is None:
             return
@@ -349,3 +471,70 @@ class Matrix(Window):
         #         self.textBoxObjectMatrix[i][j].render()
 
         super().render()
+
+class MatrixAnimationTransponieren(MatrixAnimation):
+    def __init__(self, m1: Matrix, m2: Matrix) -> None:
+        super().__init__()
+
+        self.m1 = m1
+        self.m2 = m2
+
+        self.m1.animation = self
+
+        size1 = m1.cellSize + m1.innerPadding / 2
+        size2 = m2.cellSize + m2.innerPadding / 2
+        self.pointer1 = Rect(m1.screen, 0, 0, 0, size1, size1, color=Color.RED, borderRadius=15, borderWidth=3)
+        self.pointer2 = Rect(m2.screen, 0, 0, 0, size2, size2, color=Color.RED, borderRadius=15, borderWidth=3)
+
+        m1.addObject(self.pointer1)
+        m2.addObject(self.pointer2)
+
+        self.reCalcFrames()
+
+        # frame = (m2.numberMatrix, (p1.x, p1.y), (p2.x, p2.y), showPointer)
+
+    def __del__(self):
+        self.m1.removeObject(self.pointer1)
+        self.m2.removeObject(self.pointer2)
+
+    def reCalcFrames(self):
+        self.frames = [([[0 for _ in range(self.m1.m)] for _ in range(self.m1.n)], (0, 0), (0, 0), False)]
+
+        transponiert = [[0 for _ in range(self.m1.m)] for _ in range(self.m1.n)]
+        for i in range(self.m1.m):
+            for j in range(self.m1.n):
+                transponiert[j][i] = self.m1.numberMatrix[i][j]
+
+                self.frames.append((copy.deepcopy(transponiert), (j, i), (i, j), True))
+
+        self.frames.append((copy.deepcopy(transponiert), (0, 0), (0, 0), False))
+
+        self.totalFrames = len(self.frames)
+        self.lastFrame = self.totalFrames - 1
+        self.currentFrame = min(self.currentFrame, self.lastFrame)
+
+        super().reCalcFrames()
+
+    def setFrame(self, frame: int):
+        if frame == self.currentFrame:
+            return
+
+        if frame >= self.totalFrames and frame < 0:
+            return
+
+        f = self.frames[frame]
+
+        self.m2.numberMatrix = f[0]
+        self.m2.setNumberMatrix()
+
+        self.m1.setPointerToIndex(self.pointer1, f[1][0], f[1][1])
+        self.m2.setPointerToIndex(self.pointer2, f[2][0], f[2][1])
+
+        if f[3]:
+            self.pointer1.absoluteShow()
+            self.pointer2.absoluteShow()
+        else:
+            self.pointer1.absoluteHide()
+            self.pointer2.absoluteHide()
+
+        super().setFrame(frame)

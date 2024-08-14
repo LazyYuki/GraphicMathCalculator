@@ -107,7 +107,7 @@ class Sidebar(Window):
         self.close()
 
         # animation
-        self.animationSpeed = 1
+        self.animationSpeed = 1000
 
         # start window
         mainButton.mouseOnClick(None)

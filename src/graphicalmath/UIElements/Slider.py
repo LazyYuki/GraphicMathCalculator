@@ -30,8 +30,8 @@ def update(self, dt):
         elif theoreticalX > sliderW:
             theoreticalX = sliderW
 
-        self.parent.value = theoreticalX / (sliderW) * (self.parent.maxValue - self.parent.minValue) + self.parent.minValue
-        self.parent.setValue(round(self.parent.value) if self.parent.round else self.parent.value)
+        v = theoreticalX / (sliderW) * (self.parent.maxValue - self.parent.minValue) + self.parent.minValue
+        self.parent.setValue((round(v) if self.parent.round else v))
 
         self.calcRealPosition()
         

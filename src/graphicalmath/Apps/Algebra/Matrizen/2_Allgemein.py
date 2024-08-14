@@ -2,7 +2,7 @@ import pygame
 
 from UIElements.AllUIElements import *
 from WindowOverlayHelper.Window import Window
-from UIElements.Matrix import Matrix
+from UIElements.Matrix import Matrix, MatrixAnimation, MatrixAnimationTransponieren
 
 class MatrizenAllgemein(Window):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int):
@@ -69,6 +69,7 @@ class MatrizenAllgemein(Window):
 
         self.outMatrix = Matrix(self.screen, self.inpMatrix.width + self.inpMatrix.x, 65, 0, self.transponieren.width / 3, self.transponieren.height - 50)
         self.outMatrix.changeSize(3, 3)
+        self.outMatrix.transponiert = True
         p(self.outMatrix)
         self.outMatrix.setCenter(True)
         self.outMatrix.lockTextBoxObjects(True)
@@ -76,7 +77,7 @@ class MatrizenAllgemein(Window):
 
         t1 = Text(self.screen, t.width,         0, 0, 40, 25, "m: 3", fontSize=17, fontPath="assets/fonts/VeraMono.ttf")
         s1 = Slider(self.screen, t.width + 40,  0, 0, 125, 19, onValueChange=lambda a, b: 
-                   [self.inpMatrix.changeSize(m = int(a.value)), self.outMatrix.changeSize(n = int(a.value)), t1.setText("m: " + str(int(a.value)))],
+                   [self.inpMatrix.changeSize(m = int(a.value)), self.outMatrix.changeSize(n = int(a.value)), t1.setText("m: " + str(a.value))],
                    onValueChangeArgs=self.inpMatrix)
         s1.setMaxValue(4)
         s1.setMinValue(1)
@@ -90,5 +91,39 @@ class MatrizenAllgemein(Window):
         s2.setMinValue(1)
         p(s2)
         p(t2)
+
+        animationWindow = Window(self.screen, 0, t.height + 10, 0, s1.x + s1.width, self.transponieren.height - t.height + 10)
+        a = lambda x: animationWindow.addObject(x)
+        # self.animationWindow.showColor = True
+        # self.animationWindow.color = (255, 255, 255)
+        p(animationWindow)
+
+        self.animation = MatrixAnimationTransponieren(self.inpMatrix, self.outMatrix)
+        a(self.animation)
+
+        a(Button(self.screen, 0, 10, 0, 200, 35, text="Transponieren", onClick=lambda *args: self.animation.start()))
+        a(Button(self.screen, 210, 10, 0, 200, 35, text="Stop", onClick=lambda *args: self.animation.stop()))
+        t3 = Text(self.screen, 0, 85, 0, animationWindow.width, 25, "", fontSize=17, fontPath="assets/fonts/VeraMono.ttf", verticalCenter=True)
+        s3 = Slider(self.screen, 150, 110, 0, animationWindow.width - 150, 19, 
+                    onValueChange=lambda a, b: [self.animation.setSpeed(a.value / 10), t3.setText(f"Geschwindigkeit {round(a.value, 2)}: ")])
+        s3.round = False
+        s3.setMaxValue(3)
+        s3.setMinValue(0.25)
+        a(s3)
+        a(t3)
+        t4 = Text(self.screen, 0, 160, 0, animationWindow.width, 25, "", fontSize=17, fontPath="assets/fonts/VeraMono.ttf", verticalCenter=True)
+        s4 = Slider(self.screen, 0, 185, 0, animationWindow.width, 19, 
+                    onValueChange=lambda a, b: [self.animation.setFrame(int(a.value)), self.animation.setCurrentFramedt(int(a.value)),
+                                                t4.setText(f"Frames {int(a.value) + 1} / {self.animation.totalFrames}: ")])
+        self.animation.setFrameSlider(s4)
+        a(s4)
+        a(t4)
+
+        a(Text(self.screen,      0, 235, 0, 100, 25, "Indizes: ", fontSize=20, fontPath="assets/fonts/VeraMono.ttf", verticalCenter=True))
+        a(CheckBox(self.screen, 110, 235, 0,  25, 25, 
+                     onClick=lambda a, b, c: [self.inpMatrix.setIndizesTextBox(a.value, Color.BLUE1), self.inpMatrix.lockTextBoxObjects(a.value),
+                                              self.outMatrix.setIndizesTextBox(a.value, Color.BLUE1)]))
+        a(MultiLineText(self.screen,      160, 235, 0, 200, 25, "(Output Indizes sind transponiert)", fontSize=14, fontPath="assets/fonts/VeraMono.ttf"))
+
      
 module = MatrizenAllgemein

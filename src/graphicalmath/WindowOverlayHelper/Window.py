@@ -106,6 +106,23 @@ class Window(WindowObject):
 
         return True
 
+    def removeObjectByID(self, id: str) -> bool:
+        """
+        Window.removeObjectByID:
+        - removes Object from Window render list by ID
+        - checks if obj is WindowObject or child from WindowObject
+
+        str id: id of object to be removed
+
+        return bool
+        - if removing the object succeded or not
+        """
+
+        obj = self.idCheck(id)
+        if obj == None: return False
+
+        return self.removeObject(obj)
+
     def calcRealPosition(self):
         """
         WindowObject.calcRealPosition:
