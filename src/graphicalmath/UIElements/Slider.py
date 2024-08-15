@@ -41,7 +41,6 @@ def update(self, dt):
             direction = 1 if threshold < 0 else -1
             threshold = abs(threshold)
 
-            print(threshold)
             if threshold >= 0.8: # We are very close (80%) to the next step
                 v = self.parent.value + direction
             else:
