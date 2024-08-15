@@ -31,7 +31,23 @@ def update(self, dt):
             theoreticalX = sliderW
 
         v = theoreticalX / (sliderW) * (self.parent.maxValue - self.parent.minValue) + self.parent.minValue
-        self.parent.setValue((round(v) if self.parent.round else v))
+        
+        # Problmatic implemenetaion: Proper UX handling would snap when you hover the exact slider step
+        # Not when you are "50% close" to it
+        #self.parent.setValue((round(v) if self.parent.round else v))
+
+        if self.parent.round:
+            threshold = self.parent.value - v
+            direction = 1 if threshold < 0 else -1
+            threshold = abs(threshold)
+
+            print(threshold)
+            if threshold >= 0.8: # We are very close (90%) to the next step
+                v = self.parent.value + direction
+            else:
+                v = self.parent.value
+
+        self.parent.setValue(v)
 
         self.calcRealPosition()
         
