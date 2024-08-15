@@ -42,7 +42,7 @@ def update(self, dt):
             threshold = abs(threshold)
 
             print(threshold)
-            if threshold >= 0.8: # We are very close (90%) to the next step
+            if threshold >= 0.8: # We are very close (80%) to the next step
                 v = self.parent.value + direction
             else:
                 v = self.parent.value
