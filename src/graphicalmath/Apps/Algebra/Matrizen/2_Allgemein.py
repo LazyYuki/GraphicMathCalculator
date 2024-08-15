@@ -12,7 +12,7 @@ class MatrizenAllgemein(Window):
 
         # === Main Window
 
-        self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Matrix - Einfuehrung", fontSize=70, fontPath="assets/fonts/HEADLINE.ttf")
+        self.headline = Text(self.screen, 0, 0, 0, self.width, 100, "Matrix - Transponieren", fontSize=70, fontPath="assets/fonts/HEADLINE.ttf")
         self.headline.center = True
         self.addObject(self.headline)
 

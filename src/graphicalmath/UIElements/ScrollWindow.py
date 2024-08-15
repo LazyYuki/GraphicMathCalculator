@@ -50,3 +50,6 @@ class ScrollWindow(Window):
             else:
                 obj.absoluteHide()
             
+class ScrollWindowSlider(WindowObject):
+    def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
+        super().__init__(screen, x, y, z, width, height)
