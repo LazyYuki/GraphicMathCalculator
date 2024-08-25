@@ -1,5 +1,6 @@
 from UIElements.AllUIElements import *
 from WindowOverlayHelper.Window import Window
+import pygame
 
 import sympy
 
@@ -12,15 +13,18 @@ class Introduction(Window):
         self.addObject(header)
 
         self.addObject(Text(screen, 10, 100, 0, 300, 100, "Funktion und Intervall:"))
-        self.func_inp = TextBox(screen, 200, 100, 0, 300, 50, "Funktion eingeben: ")
+        self.func_inp = TextBox(screen, 300, 100, 0, 300, 50, "Funktion eingeben: ")
         self.interval = TextBox(screen, 200, 100, 0, 300, 50, "Intrevall: ")
-        self.submit = Button(screen, 10, 300, 0, 300, 100, text="Bestätigen", onClick=self.draw)
+        self.submit = Button(screen, 10, 300, 0, 300, 100, text="Bestätigen", onClick=self.draw_func)
 
         self.addObject(self.func_inp)
         self.addObject(self.submit)
 
-    def draw(self, btn, on_clickarg, args):
+    def draw_func(self, btn, on_clickarg, args):
         func = self.func_inp.getText()
+        interval = self.interval.getText()
+        
+
 
 
         # x = sympy.symbols("x")
