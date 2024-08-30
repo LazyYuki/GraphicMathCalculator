@@ -172,7 +172,6 @@ class Expr:
             
         elif node.data == "+": # handle addition d(f+g) = df + dg
             return add(self.__diff(node.left, var), self.__diff(node.right, var))
-        
         elif node.data == "*": # handle multiplication d(f*g) = f * dg + df * g
             return add(mul(self.__diff(node.left, var), node.right), mul(node.left, self.__diff(node.right, var)))
         elif node.data == "^": # handle power d(f^g) = d(e^(g*ln(f))) = e^(g*ln(f)) * d(g * ln(f)) = f^g * d(g * ln(f))
