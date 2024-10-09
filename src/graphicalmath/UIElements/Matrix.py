@@ -38,6 +38,9 @@ def textBoxOnEnter(self: TextBox, args):
 
     if self.parent.animation != None:
         self.parent.animation.reCalcFrames()
+    
+    if self.parent.nonUpdateAnimation != None:
+        self.parent.nonUpdateAnimation.reCalcFrames()
 
 class MatrixAnimation(WindowObject):
     def __init__(self) -> types.NoneType:
@@ -190,12 +193,15 @@ class Matrix(Window):
         # == Center
 
         self.center = False
+        self.xCenter = True
+        self.yCenter = True
 
         self.calcShowRectPos()
 
         # == Animation
         self.animation: MatrixAnimation
         self.animation = None
+        self.nonUpdateAnimation = None
 
     def calcShowRectPos(self):
         generaleSize = self.cellSize + self.outerPadding
@@ -431,16 +437,16 @@ class Matrix(Window):
         if self.center:
             for obj in self.objects:
                 if obj.matrixCenter == False:
-                    obj.x += cX
-                    obj.y += cY
+                    if self.xCenter: obj.x += cX
+                    if self.yCenter: obj.y += cY
 
                     obj.matrixCenter = True
 
         else:
             for obj in self.objects:
                 if obj.matrixCenter == True:
-                    obj.x -= cX
-                    obj.y -= cY
+                    if self.xCenter: obj.x -= cX
+                    if self.yCenter: obj.y -= cY
 
                     obj.matrixCenter = False
 
@@ -536,5 +542,106 @@ class MatrixAnimationTransponieren(MatrixAnimation):
         else:
             self.pointer1.absoluteHide()
             self.pointer2.absoluteHide()
+
+        super().setFrame(frame)
+
+class MatrixAnimationAddition(MatrixAnimation):
+    def __init__(self, m1: Matrix, m2: Matrix, m3: Matrix, calcLogWindow: ScrollWindow) -> None:
+        super().__init__()
+
+        # m1 + m2 = m3
+
+        self.m1 = m1
+        self.m2 = m2
+        self.m3 = m3
+        self.calcLogWindow = calcLogWindow
+
+        self.m1.animation = self
+        self.m2.nonUpdateAnimation = self
+        self.m3.nonUpdateAnimation = self
+
+        size = m1.cellSize + m1.innerPadding / 2
+
+        self.pointer1 = Rect(m1.screen, 0, 0, 0, size, size, color=Color.GREEN, borderRadius=15, borderWidth=3)
+        self.pointer2 = Rect(m2.screen, 0, 0, 0, size, size, color=Color.RED, borderRadius=15, borderWidth=3)
+        self.pointer3 = Rect(m3.screen, 0, 0, 0, size, size, color=Color.RED, borderRadius=15, borderWidth=3)
+
+        m1.addObject(self.pointer1)
+        m2.addObject(self.pointer2)
+        m3.addObject(self.pointer3)
+
+        for x in [self.pointer1, self.pointer2, self.pointer3]:
+            x.absoluteHide()
+
+        self.reCalcFrames()
+
+        # frame = (m2.numberMatrix, (p1.x, p1.y), (p2.x, p2.y), showPointer)
+
+    def __del__(self):
+        self.m1.removeObject(self.pointer1)
+        self.m2.removeObject(self.pointer2)
+        self.m3.removeObject(self.pointer3)
+
+    def reCalcFrames(self):
+        self.frames = [([[0 for _ in range(self.m1.n)] for _ in range(self.m1.m)], (0, 0), False, "", "")]
+
+        addiert = [[0 for _ in range(self.m1.n)] for _ in range(self.m1.m)]
+        for i in range(self.m1.m):
+            for j in range(self.m1.n):
+                addiert[i][j] = self.m2.numberMatrix[i][j] + self.m3.numberMatrix[i][j]
+
+                self.frames.append((copy.deepcopy(addiert), (i, j), True, f"{i, j}:", f"{self.m2.numberMatrix[i][j]} + {self.m3.numberMatrix[i][j]} = {addiert[i][j]}"))
+
+        self.frames.append((copy.deepcopy(addiert), (0, 0), False, "", ""))
+
+        self.totalFrames = len(self.frames)
+        self.lastFrame = self.totalFrames - 1
+        self.currentFrame = min(self.currentFrame, self.lastFrame)
+
+        super().reCalcFrames()
+
+    def setFrame(self, frame: int):
+        if frame == self.currentFrame:
+            return
+
+        if frame >= self.totalFrames and frame < 0:
+            return
+
+        f = self.frames[frame]
+
+        self.m1.numberMatrix = f[0]
+        self.m1.setNumberMatrix()
+
+        self.m1.setPointerToIndex(self.pointer1, f[1][1], f[1][0])
+        self.m2.setPointerToIndex(self.pointer2, f[1][1], f[1][0])
+        self.m3.setPointerToIndex(self.pointer3, f[1][1], f[1][0])
+
+        scroll = self.calcLogWindow.currentScroll
+        self.calcLogWindow.setScroll(0)
+
+        for i in range(len(self.calcLogWindow.objects) - 1, 0, -1):
+            self.calcLogWindow.removeObject(self.calcLogWindow.objects[i])
+
+        for i in range(1, frame + 1):
+            y = 30 + i * 30
+            self.calcLogWindow.addObject(Text(self.m1.screen, 5,                                y, 0, self.calcLogWindow.width / 3    , 25, self.frames[i][3], fontSize=20, center=True))
+            self.calcLogWindow.addObject(Text(self.m1.screen, self.calcLogWindow.width / 3 + 5, y, 0, self.calcLogWindow.width / 3 * 2, 25, self.frames[i][4], fontSize=20, center=True))
+
+            if y + 30 > self.calcLogWindow.height:
+                self.calcLogWindow.minScroll = - (y + 30 - self.calcLogWindow.height)
+
+        if scroll < self.calcLogWindow.minScroll:
+            self.calcLogWindow.setScroll(self.calcLogWindow.minScroll)
+        else:
+            self.calcLogWindow.setScroll(scroll)
+
+        if f[2]:
+            self.pointer1.absoluteShow()
+            self.pointer2.absoluteShow()
+            self.pointer3.absoluteShow()
+        else:
+            self.pointer1.absoluteHide()
+            self.pointer2.absoluteHide()
+            self.pointer3.absoluteHide()
 
         super().setFrame(frame)

@@ -40,6 +40,12 @@ class ScrollWindow(Window):
             for obj in self.objects:
                 obj.y += self.scrollSpeed
 
+    def setScroll(self, scroll):
+        for obj in self.objects:
+            obj.y -= self.currentScroll - scroll
+
+        self.currentScroll = scroll
+
     def update(self, dt: float):
         super().update(dt)
 

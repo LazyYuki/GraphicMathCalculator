@@ -3,7 +3,7 @@ Home.py=0
 
 1_Einführung.py=2
 2_Allgemein.py=2
-3_Addition.py=1
+3_Addition.py=2
 4_Multiplikation.py=0
 5_Gauß.py=0
 
