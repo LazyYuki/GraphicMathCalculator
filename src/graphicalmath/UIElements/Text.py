@@ -126,3 +126,49 @@ class MultiLineText(Window):
         for text in self.objects:
             text.center = center
             text.verticalCenter = verticalCenter
+
+class LetterRenderer(WindowObject):
+    def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, fontPath="assets\\fonts\\Inter.ttf", fontSize = 20) -> None:
+        super().__init__(screen, x, y, z, width, height)
+
+        self.letters = []
+
+        self.font = pygame.font.Font(os.getcwd() + "/" + fontPath.replace("\\", "/"), fontSize)
+
+        self.setText([])
+
+    def setText(self, lettersWColor: list):
+        self.letters = lettersWColor
+        s = ""
+        self.maxH = 0
+        self.maxW = 0
+
+        for i in range(len(self.letters)):
+            s += self.letters[i][0]
+
+            self.letters[i].append(self.font.render(self.letters[i][0], True, self.letters[i][1]))
+
+            size = self.font.size(s)
+            if size[0] > self.realWidth:
+                self.letters[i][0] = "\n" + self.letters[i][0]
+
+                if size[1] > self.maxH:
+                    self.maxH = size[1]
+
+                s = ""
+
+            w = self.font.size(self.letters[i][0])[0]
+            if w > self.maxW:
+                self.maxW = w
+
+    def render(self):
+        x = 0
+        y = 0
+
+        for i in range(len(self.letters)):
+            if self.letters[i][0].startswith("\n"):
+                y += 1
+                x = 0
+
+            self.screen.blit(self.letters[i][2], (self.realX + x * self.maxW, self.realY + y * self.maxH))
+            x += 1

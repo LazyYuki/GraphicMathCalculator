@@ -80,10 +80,10 @@ class Slider(Window):
         if self.value == newValue:
             return
 
-        if self.value < self.minValue:
+        if newValue < self.minValue:
             self.value = self.minValue
 
-        elif self.value > self.maxValue:
+        elif newValue > self.maxValue:
             self.value = self.maxValue
 
         else:
@@ -97,6 +97,10 @@ class Slider(Window):
 
     def setMinValue(self, minValue):
         self.minValue = minValue
+
+        if self.value == self.minValue:
+            self.value -= 1
+            
         self.setValue(self.minValue)
 
     def setMaxValue(self, maxValue):
