@@ -4,8 +4,8 @@ Home.py=0
 1_Einführung.py=2
 2_Allgemein.py=2
 3_Addition.py=2
-4_Multiplikation.py=0
-5_Gauß.py=0
+4_Multiplikation.py=2
+5_Gauß.py=1
 
 
 1_Einführung.py=0

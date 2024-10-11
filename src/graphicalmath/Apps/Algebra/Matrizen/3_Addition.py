@@ -75,12 +75,15 @@ class MatrizenAddition(Window):
 
         outputWindow.addObject(Rect(self.screen, calcLogWindow.x, calcLogWindow.y, 0, calcLogWindow.width, calcLogWindow.height, color=Color.BLUE1, borderRadius=25, borderWidth=2))
 
-        t1 = Text(self.screen, 0, 5, 0, calcLogWindow.width, 25, "Berechnungsschritte", fontSize=25, center=True)
+        t1 = Text(self.screen, 0, 5, 0, calcLogWindow.width, 25, "Berechnungsschritt", fontSize=25, center=True)
         t1.font.bold = True
         calcLogWindow.addObject(t1)
 
+        t2 = Text(self.screen, 0, 50, 0, calcLogWindow.width, 25, "", fontSize=20, center=True)
+        calcLogWindow.addObject(t2)
+
         # === animation Matrix
-        animation = MatrixAnimationAddition(mout, minp1, minp2, calcLogWindow)
+        animation = MatrixAnimationAddition(mout, minp1, minp2, t2)
         outputWindow.addObject(animation)
         
         bstart.onClickArg = animation
@@ -102,7 +105,23 @@ class MatrizenAddition(Window):
         sm.setMinValue(1)
         sspeed.setMaxValue(3)
         sspeed.setMinValue(0.5)
+        sspeed.setValue(2.00)
         animation.setFrameSlider(sframes)
+
+        # === fill matrix
+        w = 125
+        h = 25
+        matrixFillerWindow = Window(self.screen, self.width - w, 0, 0, w, 100)
+        self.addObject(matrixFillerWindow)
+
+        bFill = Button(self.screen, 0, h, 0, w, h, text="Fülle Matrix")
+        bClear = Button(self.screen, 0, h * 2 + 10, 0, w, h, text="Reinige Matrix")
+
+        for _ in [bFill, bClear]:
+            matrixFillerWindow.addObject(_)
+
+        bFill.onClick = lambda a, b, c: [minp1.fillRandom(), minp2.fillRandom()]
+        bClear.onClick = lambda a, b, c: [minp1.clear(), minp2.clear()]
 
 
 module = MatrizenAddition

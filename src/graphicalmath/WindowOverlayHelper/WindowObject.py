@@ -110,10 +110,14 @@ class WindowObject():
     def absoluteHide(self):
         self.lockDraw = True
         self.draw = False
+        self.lockEvents = True
+        self.events = False
 
     def absoluteShow(self):
         self.lockDraw = False
         self.draw = True
+        self.lockEvents = False
+        self.events = True
 
     def show(self, lockDraw = False, lockEvents = False):
         """

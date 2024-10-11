@@ -125,5 +125,19 @@ class MatrizenAllgemein(Window):
                                               self.outMatrix.setIndizesTextBox(a.value, Color.BLUE1)]))
         a(MultiLineText(self.screen,      160, 235, 0, 200, 25, "(Output Indizes sind transponiert)", fontSize=14, fontPath="assets/fonts/VeraMono.ttf"))
 
+        # === fill matrix
+        w = 125
+        h = 25
+        matrixFillerWindow = Window(self.screen, self.width - w, 0, 0, w, 100)
+        self.addObject(matrixFillerWindow)
+
+        bFill = Button(self.screen, 0, h, 0, w, h, text="Fülle Matrix")
+        bClear = Button(self.screen, 0, h * 2 + 10, 0, w, h, text="Reinige Matrix")
+
+        for _ in [bFill, bClear]:
+            matrixFillerWindow.addObject(_)
+
+        bFill.onClick = lambda a, b, c: [self.inpMatrix.fillRandom()]
+        bClear.onClick = lambda a, b, c: [self.inpMatrix.clear()]
      
 module = MatrizenAllgemein

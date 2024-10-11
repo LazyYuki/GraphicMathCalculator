@@ -1,4 +1,4 @@
-import pygame, copy, math, types
+import pygame, copy, math, types, random
 
 import pygame.freetype
 
@@ -10,8 +10,8 @@ def mouseOnClick(self: TextBox, args):
     if self.clicked:
         return
     
-    for i in range(len(self.parent.textBoxObjectMatrix)):
-        for j in range(len(self.parent.textBoxObjectMatrix[i])):
+    for i in range(self.parent.m):
+        for j in range(self.parent.n):
             if self.parent.textBoxObjectMatrix[i][j] != self:
                 self.parent.textBoxObjectMatrix[i][j].enter()
 
@@ -25,9 +25,12 @@ def textBoxOnChange(self: TextBox, args):
     pass
 
 def textBoxOnEnter(self: TextBox, args):
+    if self.i >= len(self.parent.numberMatrix) or self.j >= len(self.parent.numberMatrix[0]):
+        return
+
     t = self.getText()
 
-    t = ''.join(c for c in t if c.isdigit()).lstrip("0")
+    t = ''.join(c for c in t if c.isdigit() or c == "-").lstrip("0")
 
     if t == "":
         self.setText("0")
@@ -262,6 +265,11 @@ class Matrix(Window):
         self.calcRealPosition()
 
     def changeSize(self, m = None, n = None):
+        for i in range(self.m):
+            for j in range(self.n):
+                if self.textBoxObjectMatrix[i][j].clicked:
+                    self.textBoxObjectMatrix[i][j].enter()
+
         if m == None:
             m = self.m
         if n == None:
@@ -301,7 +309,7 @@ class Matrix(Window):
                     self.textBoxObjectMatrix[i] += [None for _ in range(n - len(self.textBoxObjectMatrix[i]))]
 
         if m > self.m or n > self.n:
-            self.createTextBoxObjects()
+            self.createTextBoxObjects(m, n)
 
         self.removeTextBoxObjects(m, n)
         
@@ -320,10 +328,13 @@ class Matrix(Window):
             self.animation.reCalcFrames()
             self.animation.setFrame(0)
 
-    def createTextBoxObjects(self):
-        for i in range(len(self.textBoxObjectMatrix)):
-            for j in range(len(self.textBoxObjectMatrix[i])):
+    def createTextBoxObjects(self, m, n):
+        for i in range(m):
+            for j in range(n):
                 if self.textBoxObjectMatrix[i][j] != None:
+                    self.textBoxObjectMatrix[i][j].lockEvents = False
+                    self.textBoxObjectMatrix[i][j].absoluteShow()
+                    self.textBoxObjectMatrix[i][j].setText(str(self.numberMatrix[i][j]))
                     continue
                 
                 t = TextBox(self.screen,
@@ -343,11 +354,11 @@ class Matrix(Window):
         for i in range(len(self.textBoxObjectMatrix) - 1, -1, -1):
             for j in range(len(self.textBoxObjectMatrix[i]) - 1, -1, -1):
                 if i >= m or j >= n:
-                    self.removeObject(self.textBoxObjectMatrix[i][j])
-                    self.textBoxObjectMatrix[i][j] = None
+                    # self.removeObject(self.textBoxObjectMatrix[i][j])
+                    # self.textBoxObjectMatrix[i][j] = None
 
-        for i in range(len(self.textBoxObjectMatrix)):
-            self.textBoxObjectMatrix[i] = [j for j in self.textBoxObjectMatrix[i] if j is not None]
+                    self.textBoxObjectMatrix[i][j].absoluteHide()
+                    self.textBoxObjectMatrix[i][j].lockEvents = True
 
     def lockTextBoxObjects(self, lock = None):
         if lock == None:
@@ -375,8 +386,8 @@ class Matrix(Window):
         if color == None:
             color = Color.BLUE1
 
-        for i in range(len(self.textBoxObjectMatrix)):
-            for j in range(len(self.textBoxObjectMatrix[i])):
+        for i in range(self.m):
+            for j in range(self.n):
                 if self.transponiert:
                     self.textBoxObjectMatrix[i][j].setText(str(j + 1) + str(i + 1) if self.showIndizes else str(self.numberMatrix[i][j]))
                 else:
@@ -390,8 +401,8 @@ class Matrix(Window):
         if self.showIndizes:
             return 
 
-        for i in range(len(self.textBoxObjectMatrix)):
-            for j in range(len(self.textBoxObjectMatrix[i])):
+        for i in range(self.m):
+            for j in range(self.n):
                 self.textBoxObjectMatrix[i][j].setText(str(self.numberMatrix[i][j]))
 
     def setShowMainDiagonal(self, v):
@@ -460,13 +471,35 @@ class Matrix(Window):
                 else:
                     self.numberMatrix[i][j] = 0
 
-    def setPointerToIndex(self, pointer: Rect, x, y):
-        pointer.x = self.outerPadding + (self.cellSize + self.innerPadding) * x + self.cellSize / 2 - pointer.width / 2
-        pointer.y = self.outerPadding + (self.cellSize + self.innerPadding) * y + self.cellSize / 2 - pointer.height / 2
+    def setPointerToIndex(self, pointer: Rect, x, y, w = -1, h = -1):
+        pointer.x = self.outerPadding + (self.cellSize + self.innerPadding) * x + self.cellSize / 2 - (pointer.width if w == -1 else w) / 2
+        pointer.y = self.outerPadding + (self.cellSize + self.innerPadding) * y + self.cellSize / 2 - (pointer.height if h == -1 else h) / 2
         pointer.matrixCenter = False
 
         self.setCenter(self.center)
         self.calcRealPosition()
+
+    def fillRandom(self, min = -10, max = 10):
+        for i in range(self.m):
+            for j in range(self.n):
+                self.numberMatrix[i][j] = random.randint(min, max)
+
+        self.setNumberMatrix()
+
+        if self.animation != None:
+            self.animation.reCalcFrames()
+            self.animation.setFrame(0)
+
+    def clear(self):
+        for i in range(self.m):
+            for j in range(self.n):
+                self.numberMatrix[i][j] = 0
+
+        self.setNumberMatrix()
+
+        if self.animation != None:
+            self.animation.reCalcFrames()
+            self.animation.setFrame(0)
 
     def render(self):
         if self.numberMatrix is None:
@@ -494,6 +527,9 @@ class MatrixAnimationTransponieren(MatrixAnimation):
 
         m1.addObject(self.pointer1)
         m2.addObject(self.pointer2)
+
+        for x in [self.pointer1, self.pointer2]:
+            x.absoluteHide()
 
         self.reCalcFrames()
 
@@ -546,19 +582,19 @@ class MatrixAnimationTransponieren(MatrixAnimation):
         super().setFrame(frame)
 
 class MatrixAnimationAddition(MatrixAnimation):
-    def __init__(self, m1: Matrix, m2: Matrix, m3: Matrix, calcLogWindow: ScrollWindow) -> None:
+    def __init__(self, m1: Matrix, m2: Matrix, m3: Matrix, text: Text) -> None:
         super().__init__()
 
-        # m1 + m2 = m3
+        # m1 = m2 + m3
 
         self.m1 = m1
         self.m2 = m2
         self.m3 = m3
-        self.calcLogWindow = calcLogWindow
+        self.text = text
 
         self.m1.animation = self
-        self.m2.nonUpdateAnimation = self
-        self.m3.nonUpdateAnimation = self
+        self.m2.animation = self
+        self.m3.animation = self
 
         size = m1.cellSize + m1.innerPadding / 2
 
@@ -585,12 +621,18 @@ class MatrixAnimationAddition(MatrixAnimation):
     def reCalcFrames(self):
         self.frames = [([[0 for _ in range(self.m1.n)] for _ in range(self.m1.m)], (0, 0), False, "", "")]
 
+        if self.m1.m != self.m2.m or self.m1.n != self.m2.n or self.m2.m != self.m3.m or self.m2.n != self.m3.n:
+            self.totalFrames = len(self.frames)
+            self.lastFrame = self.totalFrames - 1
+            self.currentFrame = min(self.currentFrame, self.lastFrame)
+            return
+
         addiert = [[0 for _ in range(self.m1.n)] for _ in range(self.m1.m)]
         for i in range(self.m1.m):
             for j in range(self.m1.n):
                 addiert[i][j] = self.m2.numberMatrix[i][j] + self.m3.numberMatrix[i][j]
 
-                self.frames.append((copy.deepcopy(addiert), (i, j), True, f"{i, j}:", f"{self.m2.numberMatrix[i][j]} + {self.m3.numberMatrix[i][j]} = {addiert[i][j]}"))
+                self.frames.append((copy.deepcopy(addiert), (i, j), True, f"{i, j}:    ", f"{self.m2.numberMatrix[i][j]} + {self.m3.numberMatrix[i][j]} = {addiert[i][j]}"))
 
         self.frames.append((copy.deepcopy(addiert), (0, 0), False, "", ""))
 
@@ -616,26 +658,124 @@ class MatrixAnimationAddition(MatrixAnimation):
         self.m2.setPointerToIndex(self.pointer2, f[1][1], f[1][0])
         self.m3.setPointerToIndex(self.pointer3, f[1][1], f[1][0])
 
-        scroll = self.calcLogWindow.currentScroll
-        self.calcLogWindow.setScroll(0)
-
-        for i in range(len(self.calcLogWindow.objects) - 1, 0, -1):
-            self.calcLogWindow.removeObject(self.calcLogWindow.objects[i])
-
-        for i in range(1, frame + 1):
-            y = 30 + i * 30
-            self.calcLogWindow.addObject(Text(self.m1.screen, 5,                                y, 0, self.calcLogWindow.width / 3    , 25, self.frames[i][3], fontSize=20, center=True))
-            self.calcLogWindow.addObject(Text(self.m1.screen, self.calcLogWindow.width / 3 + 5, y, 0, self.calcLogWindow.width / 3 * 2, 25, self.frames[i][4], fontSize=20, center=True))
-
-            if y + 30 > self.calcLogWindow.height:
-                self.calcLogWindow.minScroll = - (y + 30 - self.calcLogWindow.height)
-
-        if scroll < self.calcLogWindow.minScroll:
-            self.calcLogWindow.setScroll(self.calcLogWindow.minScroll)
-        else:
-            self.calcLogWindow.setScroll(scroll)
+        self.text.setText(f[3] + f[4])
 
         if f[2]:
+            self.pointer1.absoluteShow()
+            self.pointer2.absoluteShow()
+            self.pointer3.absoluteShow()
+        else:
+            self.pointer1.absoluteHide()
+            self.pointer2.absoluteHide()
+            self.pointer3.absoluteHide()
+
+        super().setFrame(frame)
+
+class MatrixAnimationMult(MatrixAnimation):
+    def __init__(self, m1: Matrix, m2: Matrix, m3: Matrix, letterRenderer: LetterRenderer) -> None:
+        super().__init__()
+
+        # m1 * m2 = m3
+
+        self.m1 = m1
+        self.m2 = m2
+        self.m3 = m3
+        self.letterRenderer = letterRenderer
+
+        self.m1.animation = self
+        self.m2.animation = self
+        self.m3.animation = self
+
+        self.size = m1.cellSize + m1.innerPadding / 2
+
+        self.pointer1 = Rect(m1.screen, 0, 0, 0, m1.showRowRect.width, self.size, color=Color.YELLOW, borderRadius=15, borderWidth=3)
+        self.pointer2 = Rect(m2.screen, 0, 0, 0, self.size, m2.showColumnRect.height, color=Color.PURPLE, borderRadius=15, borderWidth=3)
+        self.pointer3 = Rect(m3.screen, 0, 0, 0, self.size, self.size, color=Color.GREEN, borderRadius=15, borderWidth=3)
+
+        m1.addObject(self.pointer1)
+        m2.addObject(self.pointer2)
+        m3.addObject(self.pointer3)
+
+        for x in [self.pointer1, self.pointer2, self.pointer3]:
+            x.absoluteHide()
+
+        self.reCalcFrames()
+
+        # frame = (m2.numberMatrix, (p1.x, p1.y), (p2.x, p2.y), showPointer)
+
+    def __del__(self):
+        self.m1.removeObject(self.pointer1)
+        self.m2.removeObject(self.pointer2)
+        self.m3.removeObject(self.pointer3)
+
+    def reCalcFrames(self):
+        self.frames = [([[0 for _ in range(self.m3.n)] for _ in range(self.m3.m)], (0, 0), (0, 0), (0, 0), False, [])]
+
+        self.pointer1.width = self.size  + (self.m1.cellSize + self.m1.innerPadding) * (self.m1.n - 1)
+        self.pointer2.height = self.size + (self.m1.cellSize + self.m1.innerPadding) * (self.m2.m - 1)
+
+        if self.m1.n != self.m2.m or self.m1.m != self.m3.m or self.m2.n != self.m3.n:
+            self.totalFrames = len(self.frames)
+            self.lastFrame = self.totalFrames - 1
+            self.currentFrame = min(self.currentFrame, self.lastFrame)
+            return
+
+        mult = [[0 for _ in range(self.m3.n)] for _ in range(self.m3.m)]
+
+        for i in range(self.m3.m):
+            for j in range(self.m3.n):
+                letterText = []
+                w = 0
+
+                for k in range(self.m1.n):
+                    mult[i][j] += self.m1.numberMatrix[i][k] * self.m2.numberMatrix[k][j]
+
+                    w = max(w, len(str(self.m1.numberMatrix[i][k])), len(str(self.m2.numberMatrix[k][j])))
+
+                    letterText.append([str(self.m1.numberMatrix[i][k]), Color.YELLOW])
+                    letterText.append([" * ", Color.WHITE])
+                    letterText.append([str(self.m2.numberMatrix[k][j]), Color.PURPLE])
+                    letterText.append([" + \n", Color.WHITE])
+ 
+                for t in range(0, len(letterText)):
+                    if letterText[t][0] == " + \n" or letterText[t][0] == " * ":
+                        continue
+
+                    letterText[t][0] = letterText[t][0].rjust(w, " ")
+
+                letterText.pop()
+                letterText.append(["\n = ", Color.WHITE])
+                letterText.append([str(mult[i][j]), Color.GREEN])
+
+                self.frames.append((copy.deepcopy(mult), (i, 0), (0, j), (i, j),  True, letterText))
+
+        self.frames.append((mult, (0, 0), (0, 0), (0, 0), False, []))
+
+        self.totalFrames = len(self.frames)
+        self.lastFrame = self.totalFrames - 1
+        self.currentFrame = min(self.currentFrame, self.lastFrame)
+
+        super().reCalcFrames()
+
+    def setFrame(self, frame: int):
+        if frame == self.currentFrame:
+            return
+
+        if frame >= self.totalFrames and frame < 0:
+            return
+
+        f = self.frames[frame]
+
+        self.m3.numberMatrix = f[0]
+        self.m3.setNumberMatrix()
+
+        self.m1.setPointerToIndex(self.pointer1, f[1][1], f[1][0], self.size, self.size)
+        self.m2.setPointerToIndex(self.pointer2, f[2][1], f[2][0], self.size, self.size)
+        self.m3.setPointerToIndex(self.pointer3, f[3][1], f[3][0])
+
+        self.letterRenderer.setText(f[5])
+
+        if f[4]:
             self.pointer1.absoluteShow()
             self.pointer2.absoluteShow()
             self.pointer3.absoluteShow()

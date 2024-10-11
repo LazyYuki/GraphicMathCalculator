@@ -2,7 +2,7 @@ import pygame
 
 from UIElements.AllUIElements import *
 from WindowOverlayHelper.Window import Window
-from UIElements.Matrix import Matrix, MatrixAnimationAddition
+from UIElements.Matrix import Matrix, MatrixAnimationMult
 
 class MatrixMultiplikation(Window):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int):
@@ -25,19 +25,17 @@ class MatrixMultiplikation(Window):
         matrixWindowOut3 = Window(self.screen, x + 50, y + h, 0, h, h)
 
         berechnungsWindow = Window(self.screen, 0, y + h + 50, 0, x - h, h - 100)
-        # berechnungsWindow.showColor = True
-        # berechnungsWindow.color = (255, 0, 0)
-
         animationWindow = Window(self.screen,  0,       y, 0, x, 75)
-        # animationWindow.showColor = True
-        # animationWindow.color = (0, 255, 0)
-
         utilityWindow = Window(self.screen, 0, y + animationWindow.height + 30, 0, x, h - animationWindow.height - 30)
-        # utilityWindow.showColor = True
-        # utilityWindow.color = (0, 0, 255)
 
         for _ in [matrixWindowInp2, matrixWindowInp1, matrixWindowOut3, berechnungsWindow, animationWindow, utilityWindow]:
             self.addObject(_)
+
+        # === background
+        p = 20
+        matrixWindowInp1.addObject(Rect(self.screen, p, p, 0, h - p * 2, h - p * 2, color=( 100, 100, 100 ), borderRadius=40))
+        matrixWindowInp2.addObject(Rect(self.screen, p, p, 0, h - p * 2, h - p * 2, color=( 100, 100, 100 ), borderRadius=40))
+        matrixWindowOut3.addObject(Rect(self.screen, p, p, 0, h - p * 2, h - p * 2, color=( 100, 100, 100 ), borderRadius=40))
 
         # === matrix
         minp1 = Matrix(self.screen, 0, 0, 0, matrixWindowInp1.width, matrixWindowInp1.height)
@@ -93,7 +91,7 @@ class MatrixMultiplikation(Window):
         tBn = Text(self.screen, aBn.x, aBn.y + aBn.height, 0, aBn.width, aBn.height, "n(B)", center=True, color=aBn.color, fontSize=25)
         aBm = Arrow(self.screen, 20, m, 0, 25, h - m * 2, orientation="s", color=(0, 255, 255))
         tBm = Text(self.screen, aBm.x + aBm.width, aBm.y, 0, 60, aBm.height, "m(B)", center=True, color=aBm.color, fontSize=25)
-        tB = Text(self.screen, 0, 0, 0, h, h, "B", fontSize=150, fontPath="assets/fonts/VeraMono.ttf", center=True, color=(100, 100, 100))
+        tB = Text(self.screen, 0, 0, 0, h, h, "B", fontSize=150, fontPath="assets/fonts/VeraMono.ttf", center=True, color=(25, 25, 25))
 
         for _ in [aBn, aBm, tB, tBn, tBm]:
             matrixWindowInp2.addObject(_)
@@ -102,7 +100,7 @@ class MatrixMultiplikation(Window):
         tAn = Text(self.screen, aAn.x, aAn.y + aAn.height, 0, aAn.width, aAn.height, "n(A)", center=True, color=aAn.color, fontSize=25)
         aAm = Arrow(self.screen, 20, m, 0, 25, h - m * 2, orientation="s", color=(255, 255, 0))
         tAm = Text(self.screen, aAm.x + aAm.width, aAm.y, 0, 60, aAm.height, "m(A)", center=True, color=aAm.color, fontSize=25)
-        tA = Text(self.screen, 0, 0, 0, h, h, "A", fontSize=150, fontPath="assets/fonts/VeraMono.ttf", center=True, color=(100, 100, 100))
+        tA = Text(self.screen, 0, 0, 0, h, h, "A", fontSize=150, fontPath="assets/fonts/VeraMono.ttf", center=True, color=(25, 25, 25))
 
         for _ in [aAn, aAm, tA, tAn, tAm]:
             matrixWindowInp1.addObject(_)
@@ -111,7 +109,7 @@ class MatrixMultiplikation(Window):
         tCn = Text(self.screen, aCn.x, aCn.y + aCn.height, 0, aCn.width, aCn.height, "n(C)", center=True, color=aCn.color, fontSize=25)
         aCm = Arrow(self.screen, 20, m, 0, 25, h - m * 2, orientation="s", color=(255, 255, 0))
         tCm = Text(self.screen, aCm.x + aCm.width, aCm.y, 0, 60, aCm.height, "m(C)", center=True, color=aCm.color, fontSize=25)
-        tC = Text(self.screen, 0, 0, 0, h, h, "C", fontSize=150, fontPath="assets/fonts/VeraMono.ttf", center=True, color=(100, 100, 100))
+        tC = Text(self.screen, 0, 0, 0, h, h, "C", fontSize=150, fontPath="assets/fonts/VeraMono.ttf", center=True, color=(25, 25, 25))
 
         for _ in [aCn, aCm, tC, tCn, tCm]:
             matrixWindowOut3.addObject(_)
@@ -143,13 +141,17 @@ class MatrixMultiplikation(Window):
 
         # === berechnungs Window
 
-        tbw = Text(self.screen, 0, 5, 0, berechnungsWindow.width - 5, 25, "Berechnungsschritt", fontSize=25, center=True)
+        tbw = Text(self.screen, 0, 5, 0, berechnungsWindow.width - 5, 30, "Berechnungsschritt", fontSize=30, center=True)
         tbw.font.bold = True
 
-        lrbw = LetterRenderer(self.screen, 5, 40, 0, berechnungsWindow.width - 5, berechnungsWindow.height - 40 * 2, fontSize=20)
-        
+        lrbw = LetterRenderer(self.screen, 20, 50, 0, berechnungsWindow.width - 40, berechnungsWindow.height - 40 * 2, fontSize=25, fontPath="assets/fonts/VeraMono.ttf")
+
         for _ in [tbw, lrbw]:
             berechnungsWindow.addObject(_)
+
+        # === Animation
+        animation = MatrixAnimationMult(minp1, minp2, mout, lrbw)
+        self.addObject(animation)
 
         # === events
         c1.onClick = lambda a, b, c: [showVisualisierung() if c1.value else hideVisualisierung()]
@@ -159,17 +161,35 @@ class MatrixMultiplikation(Window):
         sBm.onValueChange = lambda a, b: [stBm.setText(f"m(B): {int(sBm.value)}"), sAn.setValue(int(sBm.value)), minp2.changeSize(m = int(sAn.value))]
         sBn.onValueChange = lambda a, b: [stBn.setText(f"n(B): {int(sBn.value)}"), minp2.changeSize(n = int(sBn.value)), mout.changeSize(n = int(sBn.value))]
 
-        # animation = MatrixAnimationAddition(mout, minp1, minp2, calcLogWindow)
-        # outputWindow.addObject(animation)
-        
-        # bstart.onClickArg = animation
-        # bstop.onClickArg = animation
-        # bstart.onClick = lambda y, x, z: x.start()
-        # bstop.onClick = lambda y, x, z: x.stop()
+        sspeed.onValueChange = lambda a, b: [animation.setSpeed(sspeed.value / 10), tspeed.setText(f"Geschw. {sspeed.value:.2f}: ")]
+        sframes.onValueChange = lambda a, b: [animation.setFrame(int(a.value)), animation.setCurrentFramedt(int(a.value)), tframes.setText(f"Frames {int(sframes.value) + 1}/{animation.totalFrames}: ")]
+
+        bstart.onClick = lambda y, x, z: animation.start()
+        bstop.onClick = lambda y, x, z: animation.stop()
 
         # === start up
         for _ in [sAm, sAn, sBm, sBn]:
             _.setMaxValue(4)
             _.setMinValue(1)
+
+        sspeed.setMaxValue(3)
+        sspeed.setMinValue(0.5)
+        sspeed.setValue(2.00)
+        animation.setFrameSlider(sframes)
+
+        # === fill matrix
+        w = 125
+        h = 25
+        matrixFillerWindow = Window(self.screen, self.width - w, 0, 0, w, 100)
+        self.addObject(matrixFillerWindow)
+
+        bFill = Button(self.screen, 0, h, 0, w, h, text="Fülle Matrix")
+        bClear = Button(self.screen, 0, h * 2 + 10, 0, w, h, text="Reinige Matrix")
+
+        for _ in [bFill, bClear]:
+            matrixFillerWindow.addObject(_)
+
+        bFill.onClick = lambda a, b, c: [minp1.fillRandom(), minp2.fillRandom()]
+        bClear.onClick = lambda a, b, c: [minp1.clear(), minp2.clear()]
 
 module = MatrixMultiplikation

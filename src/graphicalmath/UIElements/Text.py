@@ -141,25 +141,32 @@ class LetterRenderer(WindowObject):
         self.letters = lettersWColor
         s = ""
         self.maxH = 0
-        self.maxW = 0
 
         for i in range(len(self.letters)):
+            if self.letters[i][0].endswith("\n"):
+                self.letters[i][0] = self.letters[i][0][:-1]
+                
+                if i + 1 < len(self.letters):
+                    self.letters[i + 1][0] = "\n" + self.letters[i + 1][0]
+
+            endLine = False
+            if self.letters[i][0].startswith("\n"):
+                self.letters[i][0] = self.letters[i][0][1:]
+                endLine = True
+
             s += self.letters[i][0]
 
             self.letters[i].append(self.font.render(self.letters[i][0], True, self.letters[i][1]))
+            self.letters[i].append(self.font.size(self.letters[i][0])[0])
 
             size = self.font.size(s)
-            if size[0] > self.realWidth:
+            if size[0] > self.realWidth or endLine:
                 self.letters[i][0] = "\n" + self.letters[i][0]
 
                 if size[1] > self.maxH:
                     self.maxH = size[1]
 
                 s = ""
-
-            w = self.font.size(self.letters[i][0])[0]
-            if w > self.maxW:
-                self.maxW = w
 
     def render(self):
         x = 0
@@ -170,5 +177,5 @@ class LetterRenderer(WindowObject):
                 y += 1
                 x = 0
 
-            self.screen.blit(self.letters[i][2], (self.realX + x * self.maxW, self.realY + y * self.maxH))
-            x += 1
+            self.screen.blit(self.letters[i][2], (self.realX + x, self.realY + y * self.maxH))
+            x += self.letters[i][3]
