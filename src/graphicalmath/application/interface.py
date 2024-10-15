@@ -27,11 +27,11 @@ class Application:
 
         self._mainWindow = Window(self._screen, 0, 0, 0, self.settings.width, self.settings.height)
 
-        self.container = Window(self._screen, 90, 0, 0, self.settings.width - 90, self.settings.height)
+        self.container = Window(self._screen, 90, 0, 1, self.settings.width - 90, self.settings.height)
         self.sidebar = Sidebar(self._screen, 10, 10, 0, 300, self.settings.height - 20, container=self.container)
 
-        self._mainWindow.addObject(self.container)
         self._mainWindow.addObject(self.sidebar)
+        self._mainWindow.addObject(self.container)
 
         return True
 

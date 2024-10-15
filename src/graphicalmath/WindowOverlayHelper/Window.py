@@ -226,9 +226,6 @@ class Window(WindowObject):
         for obj in self.objects:
             obj.update(dt)
 
-        for obj in self.objects:
-            obj.update(dt)
-
     def idCheck(self, id):
         o: WindowObject
         for o in self.objects:
@@ -236,6 +233,10 @@ class Window(WindowObject):
                 return o
             
         return None
+    
+    def debug(self, color):
+        self.showColor = True
+        self.color = color
 
     def render(self):
         """

@@ -1,8 +1,5 @@
 from enum import Enum
-
-# in order to make this an actual enum we'd need to also get enum members
-# using Color.RED.value for instance, but I don't have Lust gerade das zu ändern
-# class Color(Enum):
+import random
 
 class Color():
     RED = (255, 0, 0)
@@ -24,3 +21,6 @@ class Color():
     ROYALBLUE = (65, 105, 225)
     PERSIANBLUE = (0, 166, 147)
     MAYABLUE = (115, 194, 251)
+
+    def random():
+        return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))

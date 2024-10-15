@@ -16,13 +16,13 @@ class Home(Window):
         self.dirStruct = {}
         self.loadDirectoryStructure("src/graphicalmath/Apps", self.dirStruct)
 
-        newLines = []
+        self.newLines = []
         with open("src/graphicalmath/Apps/Status.txt", "r", encoding="utf-8") as f:
-            txtLines = f.readlines()
-            newLines = self.loadStatusTxt(txtLines, self.dirStruct)[0]
+            self.txtLines = f.readlines()
+            self.loadStatusTxt(self.dirStruct)
 
         with open("src/graphicalmath/Apps/Status.txt", "w", encoding="utf-8") as f:
-            f.writelines(newLines)
+            f.writelines(self.newLines)
 
         # === Main Window
 
@@ -139,15 +139,13 @@ class Home(Window):
 
                 dir["Apps"].append([f.name, 0])
 
-    def loadStatusTxt(self, txtLines, dir):
-        newLines = []
-
+    def loadStatusTxt(self, dir):
         index = 0
         for i in range(len(dir["Apps"])):
             name2, status2 = dir["Apps"][i]
 
-            if i < len(txtLines):
-                parts = txtLines[i].replace("\n", "").split("=")
+            if i < len(self.txtLines):
+                parts = self.txtLines[i].replace("\n", "").split("=")
                 if len(parts) < 2:
                     continue
 
@@ -159,19 +157,15 @@ class Home(Window):
                     status2 = int(status1)
                     dir["Apps"][i][1] = status2
 
-            newLines.append(f"{name2}={status2}\n")
+            self.newLines.append(f"{name2}={status2}\n")
 
-        newLines.append("\n")
-        txtLines = txtLines[index+1:]
+        self.newLines.append("\n")
+        self.txtLines = self.txtLines[index+1:]
 
         for name, d in dir.items():
             if name == "Apps": continue
 
-            n, t = self.loadStatusTxt(txtLines, d)
-            txtLines = t
-            newLines += n
-
-        return newLines, txtLines
+            self.loadStatusTxt(d)
 
         
     windowSubWindowDirHeight = 25

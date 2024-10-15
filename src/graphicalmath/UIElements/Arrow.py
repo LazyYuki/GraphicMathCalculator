@@ -43,7 +43,6 @@ class Arrow(Window):
 
         self.trianglePoints = []
         
-
     def changeBorderRadius(self, br: int):
         self.br_tr = br
         self.br_br = br
@@ -51,22 +50,23 @@ class Arrow(Window):
         self.br_bl = br
 
     def getTrianglePoints(self):
-        if len(self.trianglePoints) != 0:
-            return self.trianglePoints
+        # if len(self.trianglePoints) != 0:
+        #     return self.trianglePoints
         
         if self.orientation == "n":
             self.trianglePoints = [(self.realX + self.realWidth // 2, self.realY), 
                                    (self.realX, self.realY + self.triangleHeight), 
                                    (self.realX + self.realWidth, self.realY + self.triangleHeight)]
+            
         elif self.orientation == "s":
             self.trianglePoints = [(self.realX + self.realWidth // 2, self.realY + self.realHeight), 
                                    (self.realX, self.realY + self.realHeight - self.triangleHeight), 
                                    (self.realX + self.realWidth, self.realY + self.realHeight - self.triangleHeight)]
+            
         elif self.orientation == "e":
             self.trianglePoints = [(self.realX + self.realWidth, self.realY + self.realHeight // 2), 
                                    (self.realX + self.realWidth - self.triangleWidth, self.realY), 
                                    (self.realX + self.realWidth - self.triangleWidth, self.realY + self.realHeight)] 
-
 
         elif self.orientation == "w":
             self.trianglePoints = [(self.realX, self.realY + self.realHeight // 2), 

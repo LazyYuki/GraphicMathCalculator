@@ -30,20 +30,26 @@ def textBoxOnEnter(self: TextBox, args):
 
     t = self.getText()
 
-    t = ''.join(c for c in t if c.isdigit() or c == "-").lstrip("0")
+    t = ''.join(c for c in t if c.isdigit() or c in ["-", "."]).lstrip("0")
 
     if t == "":
         self.setText("0")
     else:
         self.setText(t)
 
-    self.parent.numberMatrix[self.i][self.j] = int(self.getText())
+    self.parent.numberMatrix[self.i][self.j] = round(float(self.getText()), 2)
 
     if self.parent.animation != None:
         self.parent.animation.reCalcFrames()
     
     if self.parent.nonUpdateAnimation != None:
         self.parent.nonUpdateAnimation.reCalcFrames()
+
+def setText(self: TextBox, text):
+    if text.endswith(".0"):
+        text = text[:-2]
+    self.text.setText(text)
+    self.cursor = len(text)
 
 class MatrixAnimation(WindowObject):
     def __init__(self) -> types.NoneType:
@@ -133,7 +139,7 @@ class MatrixAnimation(WindowObject):
         self.currentFrame = frame
 
 class Matrix(Window):
-    def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
+    def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, innerPadding = (5, 5)) -> None:
         super().__init__(screen, x, y, z, width, height)
         
         self.numberMatrix = None
@@ -145,7 +151,10 @@ class Matrix(Window):
 
         self.cellSize = 50
         self.outerPadding = 25
-        self.innerPadding = 5
+        # self.innerPadding = innerPadding
+
+        self.innerPaddingX = innerPadding[0]
+        self.innerPaddingY = innerPadding[1]
 
         # bracket
         size = 4
@@ -166,9 +175,14 @@ class Matrix(Window):
         self.bracket2Down.br_tl = 100
         self.bracket2Down.br_bl = 100
 
+        brackets = [self.bracket1Top, self.bracket1Middle, self.bracket1Down, self.bracket2Top, self.bracket2Middle, self.bracket2Down]
         bracket: Rect
-        for bracket in [self.bracket1Top, self.bracket1Middle, self.bracket1Down, self.bracket2Top, self.bracket2Middle, self.bracket2Down]:
+        for bracket in brackets:
             self.addObject(bracket)
+
+        self.seperator = Rect(screen, 0, 0, 0, 0, 0, borderRadius=100)
+        self.addObject(self.seperator)
+        self.seperator.absoluteHide()
 
         self.calcBracketPosition()
 
@@ -219,7 +233,7 @@ class Matrix(Window):
         self.showColumnRect.width = generaleSize
         self.showColumnRect.height = self.bracket1Middle.height - self.outerPadding
 
-        tmp_1 = min(self.m, self.n) * (self.cellSize + self.innerPadding)
+        tmp_1 = min(self.m, self.n) * (self.cellSize + self.innerPaddingX)
         tmp_2 = min(self.bracket2Middle.x, self.bracket1Middle.height) / 2
 
         self.showMainDiagonalRect.x = 0
@@ -245,12 +259,12 @@ class Matrix(Window):
     def calcBracketPosition(self):
         self.bracket1Top.width = self.cellSize / 4 + self.outerPadding
 
-        self.bracket1Middle.height = (self.cellSize + self.innerPadding) * self.m + self.outerPadding * 2 - self.innerPadding
+        self.bracket1Middle.height = (self.cellSize + self.innerPaddingY) * self.m + self.outerPadding * 2 - self.innerPaddingY
         
         self.bracket1Down.y = self.bracket1Middle.height - self.bracket1Down.height
         self.bracket1Down.width = self.cellSize / 4 + self.outerPadding
 
-        tmp = (self.cellSize + self.innerPadding) * self.n + self.outerPadding * 2 - self.innerPadding
+        tmp = (self.cellSize + self.innerPaddingX) * self.n + self.outerPadding * 2 - self.innerPaddingX
 
         self.bracket2Top.x = tmp - self.bracket1Top.width + self.bracket2Middle.width
         self.bracket2Top.width = self.bracket1Top.width
@@ -261,6 +275,11 @@ class Matrix(Window):
         self.bracket2Down.x = self.bracket2Top.x
         self.bracket2Down.y = self.bracket1Down.y
         self.bracket2Down.width = self.bracket1Down.width
+
+        self.seperator.x = (self.cellSize + self.innerPaddingX) * (self.n - 1) + self.outerPadding - self.innerPaddingX + self.innerPaddingX / 4
+        self.seperator.y = self.outerPadding
+        self.seperator.width = math.ceil(self.innerPaddingX / 2)
+        self.seperator.height = self.bracket1Middle.height - self.outerPadding * 2
 
         self.calcRealPosition()
 
@@ -338,7 +357,7 @@ class Matrix(Window):
                     continue
                 
                 t = TextBox(self.screen,
-                    self.outerPadding + (self.cellSize + self.innerPadding) * j, self.outerPadding + (self.cellSize + self.innerPadding) * i, 1, 
+                    self.outerPadding + (self.cellSize + self.innerPaddingX) * j, self.outerPadding + (self.cellSize + self.innerPaddingY) * i, 1, 
                     self.cellSize, self.cellSize, textBoxStyle=self.textBoxStyle)
                 t.setText(str(self.numberMatrix[i][j]))
                 t.i = i
@@ -346,6 +365,7 @@ class Matrix(Window):
                 t.onChangeText = types.MethodType(textBoxOnChange, t)
                 t.onEnter = types.MethodType(textBoxOnEnter, t)
                 t.mouseOnClick = types.MethodType(mouseOnClick, t)
+                t.setText = types.MethodType(setText, t)
 
                 self.textBoxObjectMatrix[i][j] = t
                 self.addObject(self.textBoxObjectMatrix[i][j])
@@ -472,8 +492,8 @@ class Matrix(Window):
                     self.numberMatrix[i][j] = 0
 
     def setPointerToIndex(self, pointer: Rect, x, y, w = -1, h = -1):
-        pointer.x = self.outerPadding + (self.cellSize + self.innerPadding) * x + self.cellSize / 2 - (pointer.width if w == -1 else w) / 2
-        pointer.y = self.outerPadding + (self.cellSize + self.innerPadding) * y + self.cellSize / 2 - (pointer.height if h == -1 else h) / 2
+        pointer.x = self.outerPadding + (self.cellSize + self.innerPaddingX) * x + self.cellSize / 2 - (pointer.width if w == -1 else w) / 2
+        pointer.y = self.outerPadding + (self.cellSize + self.innerPaddingY) * y + self.cellSize / 2 - (pointer.height if h == -1 else h) / 2
         pointer.matrixCenter = False
 
         self.setCenter(self.center)
@@ -489,6 +509,20 @@ class Matrix(Window):
         if self.animation != None:
             self.animation.reCalcFrames()
             self.animation.setFrame(0)
+
+    def hideBreakets(self):
+        for bracket in [self.bracket1Top, self.bracket1Middle, self.bracket1Down, self.bracket2Top, self.bracket2Middle, self.bracket2Down]:
+            bracket.absoluteHide()
+
+    def showBreakets(self):
+        for bracket in [self.bracket1Top, self.bracket1Middle, self.bracket1Down, self.bracket2Top, self.bracket2Middle, self.bracket2Down]:
+            bracket.absoluteShow()
+
+    def showSeperator(self):
+        self.seperator.absoluteShow()
+
+    def hideSeperator(self):
+        self.seperator.absoluteHide()
 
     def clear(self):
         for i in range(self.m):
@@ -520,8 +554,8 @@ class MatrixAnimationTransponieren(MatrixAnimation):
 
         self.m1.animation = self
 
-        size1 = m1.cellSize + m1.innerPadding / 2
-        size2 = m2.cellSize + m2.innerPadding / 2
+        size1 = m1.cellSize + m1.innerPaddingX / 2
+        size2 = m2.cellSize + m2.innerPaddingX / 2
         self.pointer1 = Rect(m1.screen, 0, 0, 0, size1, size1, color=Color.RED, borderRadius=15, borderWidth=3)
         self.pointer2 = Rect(m2.screen, 0, 0, 0, size2, size2, color=Color.RED, borderRadius=15, borderWidth=3)
 
@@ -596,7 +630,7 @@ class MatrixAnimationAddition(MatrixAnimation):
         self.m2.animation = self
         self.m3.animation = self
 
-        size = m1.cellSize + m1.innerPadding / 2
+        size = m1.cellSize + m1.innerPaddingX / 2
 
         self.pointer1 = Rect(m1.screen, 0, 0, 0, size, size, color=Color.GREEN, borderRadius=15, borderWidth=3)
         self.pointer2 = Rect(m2.screen, 0, 0, 0, size, size, color=Color.RED, borderRadius=15, borderWidth=3)
@@ -686,7 +720,7 @@ class MatrixAnimationMult(MatrixAnimation):
         self.m2.animation = self
         self.m3.animation = self
 
-        self.size = m1.cellSize + m1.innerPadding / 2
+        self.size = m1.cellSize + m1.innerPaddingX / 2
 
         self.pointer1 = Rect(m1.screen, 0, 0, 0, m1.showRowRect.width, self.size, color=Color.YELLOW, borderRadius=15, borderWidth=3)
         self.pointer2 = Rect(m2.screen, 0, 0, 0, self.size, m2.showColumnRect.height, color=Color.PURPLE, borderRadius=15, borderWidth=3)
@@ -711,8 +745,8 @@ class MatrixAnimationMult(MatrixAnimation):
     def reCalcFrames(self):
         self.frames = [([[0 for _ in range(self.m3.n)] for _ in range(self.m3.m)], (0, 0), (0, 0), (0, 0), False, [])]
 
-        self.pointer1.width = self.size  + (self.m1.cellSize + self.m1.innerPadding) * (self.m1.n - 1)
-        self.pointer2.height = self.size + (self.m1.cellSize + self.m1.innerPadding) * (self.m2.m - 1)
+        self.pointer1.width = self.size  + (self.m1.cellSize + self.m1.innerPaddingX) * (self.m1.n - 1)
+        self.pointer2.height = self.size + (self.m1.cellSize + self.m1.innerPaddingX) * (self.m2.m - 1)
 
         if self.m1.n != self.m2.m or self.m1.m != self.m3.m or self.m2.n != self.m3.n:
             self.totalFrames = len(self.frames)
@@ -750,6 +784,118 @@ class MatrixAnimationMult(MatrixAnimation):
                 self.frames.append((copy.deepcopy(mult), (i, 0), (0, j), (i, j),  True, letterText))
 
         self.frames.append((mult, (0, 0), (0, 0), (0, 0), False, []))
+
+        self.totalFrames = len(self.frames)
+        self.lastFrame = self.totalFrames - 1
+        self.currentFrame = min(self.currentFrame, self.lastFrame)
+
+        super().reCalcFrames()
+
+    def setFrame(self, frame: int):
+        if frame == self.currentFrame:
+            return
+
+        if frame >= self.totalFrames and frame < 0:
+            return
+
+        f = self.frames[frame]
+
+        self.m3.numberMatrix = f[0]
+        self.m3.setNumberMatrix()
+
+        self.m1.setPointerToIndex(self.pointer1, f[1][1], f[1][0], self.size, self.size)
+        self.m2.setPointerToIndex(self.pointer2, f[2][1], f[2][0], self.size, self.size)
+        self.m3.setPointerToIndex(self.pointer3, f[3][1], f[3][0])
+
+        self.letterRenderer.setText(f[5])
+
+        if f[4]:
+            self.pointer1.absoluteShow()
+            self.pointer2.absoluteShow()
+            self.pointer3.absoluteShow()
+        else:
+            self.pointer1.absoluteHide()
+            self.pointer2.absoluteHide()
+            self.pointer3.absoluteHide()
+
+        super().setFrame(frame)
+
+class MatrixAnimationGauß(MatrixAnimation):
+    def __init__(self, m1: Matrix, mList: list, lrList: list) -> None:
+        super().__init__()
+
+        # m1 * m2 = m3
+
+        self.m1 = m1
+        self.mList = mList
+        self.lrList = lrList
+
+        self.m1.animation = self
+
+        self.size = self.mList[0].cellSize + self.mList[0].innerPaddingX / 2
+
+        self.pList = []
+
+        for i in range(len(mList)):
+            pointer = Rect(m1.screen, 0, 0, 0, m1.showRowRect.width, self.size, color=Color.random(), borderRadius=15, borderWidth=3)
+            self.pList.append(pointer)
+            self.mList[i].addObject(pointer)
+            pointer.absoluteHide()
+
+        self.reCalcFrames()
+
+        # frame = (m2.numberMatrix, (p1.x, p1.y), (p2.x, p2.y), showPointer)
+
+    def __del__(self):
+        for i in range(len(self.mList)):
+            self.mList[i].removeObject(self.pList[i])
+
+    def reCalcFrames(self):
+        self.mFrames = []
+        self.mFrames.append([copy.deepcopy(self.m1.numberMatrix)])
+
+        self.pFrames = []
+        self.pFrames.append([[0, 0, False]])
+
+        self.lrFrames = []
+        # self.lrFrames.append([])
+
+        for i in range(5):
+            self.mFrames.append([[[0 for _ in range(self.m1.n)] for _ in range(self.m1.m)]])
+            self.pFrames.append([[0, 0, False]])
+
+        for i in range(10):
+            self.lrFrames.append([])
+
+
+        gauss = [[[0 for _ in range(self.m1.n)] for _ in range(self.m1.m)] for _ in range(6)]
+
+        for i in range(2):
+            self.pFrames[i].append([0, 0, True])
+            self.pFrames[i + 1].append([1, 0, True])
+            self.pFrames[i + 2].append([2, 0, True])
+
+            for j in range(i + 2, len(self.pFrames)):
+                self.pFrames[j].append([0, 0, False])
+            
+            for j in range(i * 2, len(self.lrFrames)):
+                self.lrFrames[j].append([])
+
+            x1 = self.mList[i].numberMatrix[0][0]
+            x2 = self.mList[i].numberMatrix[1][0]
+            x3 = self.mList[i].numberMatrix[2][0]
+
+            if x1 == 0:
+                return
+
+            y2 = - x2 / x1
+            y3 = - x3 / x1
+
+            self.lrFrames[i].append([["- ", Color.WHITE], [str(x2), self.pList[i + 1].color], [" / ", Color.WHITE], [str(x1), self.pList[i].color], [" = ", Color.WHITE], [str(y2), self.pList[i + 1].color]])
+            self.lrFrames[i + 1].append([["- ", Color.WHITE], [str(x3), self.pList[i + 2].color], [" / ", Color.WHITE], [str(x1), self.pList[i].color], [" = ", Color.WHITE], [str(y3), self.pList[i + 2].color]])
+
+            
+
 
         self.totalFrames = len(self.frames)
         self.lastFrame = self.totalFrames - 1

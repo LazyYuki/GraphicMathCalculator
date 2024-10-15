@@ -7,8 +7,11 @@ Home.py=0
 4_Multiplikation.py=2
 5_Gauß.py=1
 
+1_Einführung.py=0
+
 
 1_Einführung.py=0
+Ableitung.py=0
 
 test1.py=0
 

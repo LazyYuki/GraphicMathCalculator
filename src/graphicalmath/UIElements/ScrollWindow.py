@@ -14,6 +14,8 @@ class ScrollWindow(Window):
         self.minScroll = 0
         self.maxScroll = 100
 
+        self.overrightRealHeight = -1
+
     def mouseScrollDown(self, args: MouseEventArgs):
         if self.currentScroll - self.scrollSpeed < self.minScroll:
             for obj in self.objects:
@@ -45,6 +47,17 @@ class ScrollWindow(Window):
             obj.y -= self.currentScroll - scroll
 
         self.currentScroll = scroll
+
+    def calcRealPosition(self):
+        super(Window, self).calcRealPosition()
+        
+        if self.overrightRealHeight != -1:
+            self.realHeight = self.overrightRealHeight
+            self.realT = self.realY + self.realHeight
+
+        obj: WindowObject
+        for obj in self.objects:
+            obj.calcRealPosition()
 
     def update(self, dt: float):
         super().update(dt)

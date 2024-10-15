@@ -371,12 +371,12 @@ class EventManager:
             return False
         
         # run event for all sub objects
-        for obj in sorted(self.subManagerObjects, key = lambda x: x.z, reverse=True):
+        for obj in sorted(self.subManagerObjects, key = lambda x: x.z):
             if obj.eventManager.runEvent(event, correspondingArgs, False):
                 return True
 
         # sort objects
-        objects = sorted(self.allEvents[event], key = lambda x: x.z, reverse=True)
+        objects = sorted(self.allEvents[event], key = lambda x: x.z)
 
         # put self at back
         if self.windowParent in objects:
