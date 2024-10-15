@@ -8,3 +8,4 @@ from UIElements.Slider import Slider
 from UIElements.CheckBox import CheckBox
 from UIElements.Image import *
 from UIElements.Arrow import *
+from UIElements.Triangle import *

@@ -1,8 +1,9 @@
-import pygame
+import pygame, math
 
 from WindowOverlayHelper.Window import Window
 from EventManager.EventArgs import MouseEventArgs, KeyboardEventArgs
 from UIElements.Rect import Rect
+from UIElements.Triangle import Triangle
 
 class Arrow(Window):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int, orientation = "n", triangleLenForward = 0, triangleMargineSide = -1, color = (255, 255, 255)) -> None:
@@ -80,3 +81,37 @@ class Arrow(Window):
         pygame.draw.polygon(self.screen, self.color, self.getTrianglePoints())
         
         super().render()
+
+class rotatableArrow(Window):
+    def __init__(self, screen, x, y, z, l, aL, h, hS, angle, color = (255, 255, 255)):
+        super().__init__(screen, x, y, z, l, l)
+
+        self.l = l
+        self.aL = aL
+        self.h = h
+        self.hS = hS
+        self.angle = angle
+        self.color = color
+
+        self.linePoints = [(0, 0), (0, 0)]
+        self.triangle = Triangle(screen, 0, 0, z, 0, 0, h, aL, 0, color=color)
+
+        self.addObject(self.triangle)
+
+        self.setAngle(angle)
+
+    def setAngle(self, angle):
+        self.angle = angle
+        rad = math.radians(angle)
+
+        self.triangle.m = (math.cos(rad) * (self.l - self.aL / 2), -math.sin(rad) * (self.l - self.aL / 2))
+        self.triangle.changeAngle(angle)
+
+        self.linePoints[1] = self.triangle.m
+
+    def render(self):
+        pygame.draw.line(self.screen, self.color, (self.realX, self.realY), (self.linePoints[1][0] + self.realX, self.linePoints[1][1] + self.realY), self.hS)
+
+        super().render()
+
+        
