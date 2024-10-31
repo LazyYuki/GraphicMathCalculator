@@ -105,10 +105,10 @@ class MatrizenAllgemein(Window):
         a(Button(self.screen, 210, 10, 0, 200, 35, text="Stop", onClick=lambda *args: self.animation.stop()))
         t3 = Text(self.screen, 0, 85, 0, animationWindow.width, 25, "", fontSize=17, fontPath="assets/fonts/VeraMono.ttf", verticalCenter=True)
         s3 = Slider(self.screen, 150, 110, 0, animationWindow.width - 150, 19, 
-                    onValueChange=lambda a, b: [self.animation.setSpeed(a.value / 10), t3.setText(f"Geschwindigkeit {round(a.value, 2)}: ")])
+                    onValueChange=lambda a, b: [self.animation.setSpeed(a.value / 5), t3.setText(f"Geschwindigkeit {round(a.value, 2)}: ")])
         s3.round = False
-        s3.setMaxValue(3)
-        s3.setMinValue(0.25)
+        s3.setMaxValue(10)
+        s3.setMinValue(0.5)
         a(s3)
         a(t3)
         t4 = Text(self.screen, 0, 160, 0, animationWindow.width, 25, "", fontSize=17, fontPath="assets/fonts/VeraMono.ttf", verticalCenter=True)

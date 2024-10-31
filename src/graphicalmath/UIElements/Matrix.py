@@ -836,6 +836,8 @@ class MatrixAnimationGauß(MatrixAnimation):
 
         self.pList = []
 
+        self.mStartFrame = [0, 0, 0, 0, 0, 0]
+
         for i in range(len(mList)):
             pointer = Rect(m1.screen, 0, 0, 0, m1.showRowRect.width, self.size, color=Color.random(), borderRadius=15, borderWidth=3)
             self.pList.append(pointer)
@@ -851,48 +853,62 @@ class MatrixAnimationGauß(MatrixAnimation):
             self.mList[i].removeObject(self.pList[i])
 
     def reCalcFrames(self):
-        self.mFrames = []
-        self.mFrames.append([copy.deepcopy(self.m1.numberMatrix)])
+        self.mFrames = [[[[[0] for _ in range(self.m1.n)] for _ in range(self.m1.m)]] for _ in range(6)]
+        self.mFrames[0][0] = copy.deepcopy(self.m1.numberMatrix)
 
-        self.pFrames = []
-        self.pFrames.append([[0, 0, False]])
+        self.pFrames = [[[0, 0, False]] for _ in range(5)]
 
-        self.lrFrames = []
+        self.lrFrames = [[[]] for _ in range(10)]
         # self.lrFrames.append([])
 
-        for i in range(5):
-            self.mFrames.append([[[0 for _ in range(self.m1.n)] for _ in range(self.m1.m)]])
-            self.pFrames.append([[0, 0, False]])
+        # Frame 1
+        f = 1
 
-        for i in range(10):
-            self.lrFrames.append([])
+        i = 0
+
+        x1 = self.mList[0].numberMatrix[0][0]
+        x2 = self.mList[0].numberMatrix[1][0]
+        x3 = self.mList[0].numberMatrix[2][0]
+
+        e1 = - x2 / x1
+        e2 = - x3 / x1
+
+        self.mFrames[1] = copy.deepcopy(self.m1.numberMatrix)
+        self.lrFrames[f][0] = [["- ", Color.WHITE], [str(x2), self.pList[i + 1].color], [" / ", Color.WHITE], [str(x1), self.pList[i].color], [" = ", Color.WHITE], [str(e1),  Color.WHITE]]
+        self.lrFrames[f][1] = [["- ", Color.WHITE], [str(x3), self.pList[i + 2].color], [" / ", Color.WHITE], [str(x1), self.pList[i].color], [" = ", Color.WHITE], [str(e2),  Color.WHITE]]
+
+        self.pFrames[0].append((0, 0, False))
+
+        # Frame 2
+        f = 2
+
+        self.lrFrames[f][0] = [["- ", Color.WHITE], [str(x2), Color.WHITE], [" / ", Color.WHITE], [str(x1), Color.WHITE], [" = ", Color.WHITE], [str(e1),  self.pList[i + 1].color]]
+        self.lrFrames[f][1] = [["- ", Color.WHITE], [str(x3), Color.WHITE], [" / ", Color.WHITE], [str(x1), Color.WHITE], [" = ", Color.WHITE], [str(e2),  self.pList[i + 2].color]]
 
 
-        gauss = [[[0 for _ in range(self.m1.n)] for _ in range(self.m1.m)] for _ in range(6)]
+        # for i in range(2):
+        #     self.pFrames[i].append([0, 0, True])
+        #     self.pFrames[i + 1].append([1, 0, True])
+        #     self.pFrames[i + 2].append([2, 0, True])
 
-        for i in range(2):
-            self.pFrames[i].append([0, 0, True])
-            self.pFrames[i + 1].append([1, 0, True])
-            self.pFrames[i + 2].append([2, 0, True])
-
-            for j in range(i + 2, len(self.pFrames)):
-                self.pFrames[j].append([0, 0, False])
+        #     for j in range(i + 2, len(self.pFrames)):
+        #         self.pFrames[j].append([0, 0, False])
             
-            for j in range(i * 2, len(self.lrFrames)):
-                self.lrFrames[j].append([])
+        #     for j in range(i * 2, len(self.lrFrames)):
+        #         self.lrFrames[j].append([])
 
-            x1 = self.mList[i].numberMatrix[0][0]
-            x2 = self.mList[i].numberMatrix[1][0]
-            x3 = self.mList[i].numberMatrix[2][0]
+        #     x1 = self.mList[i].numberMatrix[0][0]
+        #     x2 = self.mList[i].numberMatrix[1][0]
+        #     x3 = self.mList[i].numberMatrix[2][0]
 
-            if x1 == 0:
-                return
+        #     if x1 == 0:
+        #         return
 
-            y2 = - x2 / x1
-            y3 = - x3 / x1
+        #     y2 = - x2 / x1
+        #     y3 = - x3 / x1
 
-            self.lrFrames[i].append([["- ", Color.WHITE], [str(x2), self.pList[i + 1].color], [" / ", Color.WHITE], [str(x1), self.pList[i].color], [" = ", Color.WHITE], [str(y2), self.pList[i + 1].color]])
-            self.lrFrames[i + 1].append([["- ", Color.WHITE], [str(x3), self.pList[i + 2].color], [" / ", Color.WHITE], [str(x1), self.pList[i].color], [" = ", Color.WHITE], [str(y3), self.pList[i + 2].color]])
+        #     self.lrFrames[i].append([["- ", Color.WHITE], [str(x2), self.pList[i + 1].color], [" / ", Color.WHITE], [str(x1), self.pList[i].color], [" = ", Color.WHITE], [str(y2), self.pList[i + 1].color]])
+        #     self.lrFrames[i + 1].append([["- ", Color.WHITE], [str(x3), self.pList[i + 2].color], [" / ", Color.WHITE], [str(x1), self.pList[i].color], [" = ", Color.WHITE], [str(y3), self.pList[i + 2].color]])
 
             
 

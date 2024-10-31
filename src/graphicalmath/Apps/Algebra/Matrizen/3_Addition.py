@@ -95,7 +95,7 @@ class MatrizenAddition(Window):
         sm.onValueChange = lambda a, b: [tm.setText(f"m: {int(sm.value)}"), minp1.changeSize(m = int(sm.value)), minp2.changeSize(m = int(sm.value)), mout.changeSize(m = int(sm.value))]
         sn.onValueChange = lambda a, b: [tn.setText(f"n: {int(sn.value)}"), minp1.changeSize(n = int(sn.value)), minp2.changeSize(n = int(sn.value)), mout.changeSize(n = int(sn.value))]
 
-        sspeed.onValueChange = lambda a, b: [animation.setSpeed(sspeed.value / 10), tspeed.setText(f"Geschwindigkeit {sspeed.value:.2f}: ")]
+        sspeed.onValueChange = lambda a, b: [animation.setSpeed(sspeed.value / 5), tspeed.setText(f"Geschwindigkeit {sspeed.value:.2f}: ")]
         sframes.onValueChange = lambda a, b: [animation.setFrame(int(a.value)), animation.setCurrentFramedt(int(a.value)), tframes.setText(f"Frames {int(sframes.value) + 1}/{animation.totalFrames}: ")]
 
         # === start up
@@ -103,7 +103,7 @@ class MatrizenAddition(Window):
         sn.setMinValue(1)
         sm.setMaxValue(4)
         sm.setMinValue(1)
-        sspeed.setMaxValue(3)
+        sspeed.setMaxValue(10)
         sspeed.setMinValue(0.5)
         sspeed.setValue(2.00)
         animation.setFrameSlider(sframes)

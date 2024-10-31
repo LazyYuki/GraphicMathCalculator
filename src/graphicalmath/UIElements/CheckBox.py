@@ -44,7 +44,13 @@ class CheckBox(Window):
             self.filled.absoluteHide()
 
     def mouseOnClick(self, args):
-        self.value = not self.value
+        self.setValue(not self.value)
+
+        if self.onClick != None:
+            self.onClick(self, self.onClickArg, args)
+
+    def setValue(self, value):
+        self.value = value
 
         if self.value == True:
             self.filled.color = self.colorClicked
@@ -56,9 +62,6 @@ class CheckBox(Window):
 
         else:
             self.filled.absoluteHide()
-
-        if self.onClick != None:
-            self.onClick(self, self.onClickArg, args)
 
     def render(self):
         super().render()

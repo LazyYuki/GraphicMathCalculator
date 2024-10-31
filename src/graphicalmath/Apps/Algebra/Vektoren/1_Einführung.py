@@ -1,8 +1,9 @@
 import pygame
 
 from UIElements.AllUIElements import *
-from UIElements.Coord3d import Coord3d
+from UIElements.Coord3d import *
 from WindowOverlayHelper.Window import Window
+from UIElements.geometricWriting import *
 
 class VektorEinführung(Window):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int):
@@ -21,17 +22,13 @@ class VektorEinführung(Window):
         # self.ra = rotatableArrow(self.screen, 200, 200, 0, 200, 40, 30, 5, 0, color=(255, 0, 0))
         # self.addObject(self.ra)
 
-        self.coord = Coord3d(self.screen, 50, 150, 0, self.width - 100, self.height - 300)
+        self.coord = Coord3d(self.screen, 50, 120, 0, self.width - 100, 420)
         self.addObject(self.coord)
 
+        
+
+        self.coord.renderMatplotLib()
+
         self.lol = 0
-
-    def update(self, dt):
-        super().update(dt)
-
-        self.lol += 5 * dt
-
-        self.coord.biggestNumberY = int(5 + self.lol)
-        self.coord.setTextsY()
 
 module = VektorEinführung

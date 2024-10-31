@@ -161,7 +161,7 @@ class MatrixMultiplikation(Window):
         sBm.onValueChange = lambda a, b: [stBm.setText(f"m(B): {int(sBm.value)}"), sAn.setValue(int(sBm.value)), minp2.changeSize(m = int(sAn.value))]
         sBn.onValueChange = lambda a, b: [stBn.setText(f"n(B): {int(sBn.value)}"), minp2.changeSize(n = int(sBn.value)), mout.changeSize(n = int(sBn.value))]
 
-        sspeed.onValueChange = lambda a, b: [animation.setSpeed(sspeed.value / 10), tspeed.setText(f"Geschw. {sspeed.value:.2f}: ")]
+        sspeed.onValueChange = lambda a, b: [animation.setSpeed(sspeed.value / 5), tspeed.setText(f"Geschw. {sspeed.value:.2f}: ")]
         sframes.onValueChange = lambda a, b: [animation.setFrame(int(a.value)), animation.setCurrentFramedt(int(a.value)), tframes.setText(f"Frames {int(sframes.value) + 1}/{animation.totalFrames}: ")]
 
         bstart.onClick = lambda y, x, z: animation.start()
@@ -172,7 +172,7 @@ class MatrixMultiplikation(Window):
             _.setMaxValue(4)
             _.setMinValue(1)
 
-        sspeed.setMaxValue(3)
+        sspeed.setMaxValue(10)
         sspeed.setMinValue(0.5)
         sspeed.setValue(2.00)
         animation.setFrameSlider(sframes)
