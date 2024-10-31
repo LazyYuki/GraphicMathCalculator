@@ -7,7 +7,7 @@ Home.py=0
 4_Multiplikation.py=2
 5_Gauß.py=1
 
-1_Einführung.py=0
+1_Einführung.py=2
 
 
 1_Einführung.py=0

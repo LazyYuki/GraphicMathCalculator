@@ -6,6 +6,7 @@ from UIElements.AllUIElements import *
 
 from math_calc.Vector import Vector3d
 
+import matplotlib
 from multiprocessing.pool import ThreadPool
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -13,12 +14,24 @@ import numpy as np
 import matplotlib.backends.backend_agg as agg
 
 def renderMatplotLibAsync(vectors, angle, id):
-    soa = np.array(vectors)
-
-    X, Y, Z, U, V, W = zip(*soa)
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
-    ax.quiver(X, Y, Z, U, V, W)
+
+    if len(vectors) != 0:
+        soa = np.array(vectors)
+
+        X, Y, Z, U, V, W = zip(*soa)
+
+        for vector in soa:
+            v = np.array([vector[3],vector[4],vector[5]])
+            vlength=np.linalg.norm(v)
+            ax.quiver(vector[0],vector[1],vector[2],vector[3],vector[4],vector[5],
+                    pivot='tail', arrow_length_ratio=0.3/vlength)
+
+    else:
+        X, Y, Z, U, V, W = [], [], [], [], [], []
+
+    # ax.quiver(X, Y, Z, U, V, W)
     ax.set_xlim([min([0] + list(X) + list(U)), max([6] + list(X) + list(U))])
     ax.set_ylim([min([0] + list(Y) + list(V)), max([6] + list(Y) + list(V))])
     ax.set_zlim([min([0] + list(Z) + list(W)), max([6] + list(Z) + list(W))])
@@ -42,6 +55,8 @@ def renderMatplotLibAsync(vectors, angle, id):
 class Coord3d(Window):
     def __init__(self, screen, x: int, y: int, z: int, width: int, height: int) -> None:
         super().__init__(screen, x, y, z, width, height)
+
+        matplotlib.use("Agg")
 
         self.vectors = []
 
@@ -90,15 +105,13 @@ class Coord3d(Window):
         self.vectors.append(vector)
 
     def removeVector(self, vector: Vector3d):
-        self.vectors.remove(vector)
+        if vector in self.vectors:
+            self.vectors.remove(vector)
 
     def renderMatplotLib(self):
-        self.surf = {
-            "0": None,
-            "1": None,
-            "2": None,
-            "3": None
-        }
+        self.pool.terminate()
+        self.pool = ThreadPool(processes=4)
+        
         self.asyncResultList = []
 
         self.vectorList = tuple([v.nullVectorList() for v in self.vectors])

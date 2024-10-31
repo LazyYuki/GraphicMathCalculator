@@ -45,6 +45,9 @@ def textBoxOnEnter(self: TextBox, args):
     if self.parent.nonUpdateAnimation != None:
         self.parent.nonUpdateAnimation.reCalcFrames()
 
+    if self.parent.onTextBoxChange != None:
+        self.parent.onTextBoxChange()
+
 def setText(self: TextBox, text):
     if text.endswith(".0"):
         text = text[:-2]
@@ -219,6 +222,8 @@ class Matrix(Window):
         self.animation: MatrixAnimation
         self.animation = None
         self.nonUpdateAnimation = None
+
+        self.onTextBoxChange = None
 
     def calcShowRectPos(self):
         generaleSize = self.cellSize + self.outerPadding
